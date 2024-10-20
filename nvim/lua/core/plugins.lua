@@ -36,6 +36,8 @@ return require('packer').startup(function(use)
       },
   }
 
+  use 'ConradIrwin/vim-bracketed-paste'
+
   --- LSP Zero ------
   use {
       'VonHeikemen/lsp-zero.nvim',

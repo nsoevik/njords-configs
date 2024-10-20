@@ -41,7 +41,7 @@ require('mason-lspconfig').setup({
   -- Replace the language servers listed here 
   -- with the ones you want to install
   -- https://github.com/williamboman/mason-lspconfig.nvim/blob/main/doc/server-mapping.md
-  ensure_installed = {'gopls', 'eslint', 'ts_ls'},
+  ensure_installed = { 'html', 'ts_ls', 'cssls', 'dockerls' },
   handlers = {
       function(server_name)
           lsp[server_name].setup({})
@@ -78,6 +78,23 @@ require('mason-lspconfig').setup({
     end,
   },
 })
+
+
+local lsp = require('lsp-zero').preset({})
+local cmp = require('cmp')
+cmp.setup({
+    mapping = {
+        ['<Tab>'] = cmp.mapping.select_next_item({ behavior = cmp.SelectBehavior.Select }),
+        ['<S-Tab>'] = cmp.mapping.select_prev_item({ behavior = cmp.SelectBehavior.Select }),
+        ['<CR>'] = cmp.mapping.confirm({ select = true }),
+    },
+    sources = {
+        { name = 'nvim_lsp' }, 
+        { name = 'luasnip' },
+    },
+})
+
+lsp.setup()
 
 -------------------- Auto close --------------------
 require("autoclose").setup()
