@@ -21,6 +21,11 @@ return require('packer').startup(function(use)
 	  -- or                            , branch = '0.1.x',
 	  requires = { {'nvim-lua/plenary.nvim'} }
   }
+  --
+  -------------------- Barbar (tabs) -----------------
+  use 'nvim-tree/nvim-web-devicons'
+  use 'lewis6991/gitsigns.nvim'
+  use 'romgrk/barbar.nvim'
   
   --- Colorscheme ---
   use { "scottmckendry/cyberdream.nvim" }

@@ -18,3 +18,9 @@ vim.keymap.set('n', '<Left>', ':vertical resize +2<CR>', { silent = true })
 vim.api.nvim_create_user_command('Reload', function()
       vim.cmd('source $MYVIMRC')
 end, {})
+
+vim.keymap.set('n', '<F12>', ':BufferNext<CR>', { noremap = true, silent = true })
+vim.keymap.set('n', '<S-F12>', ':BufferPrevious<CR>', { noremap = true, silent = true })
+vim.keymap.set('n', '<leader>x', ':BufferClose<CR>', { noremap = true, silent = true })
+
+vim.keymap.set('n', '<leader>e', '<cmd>lua vim.diagnostic.open_float()<CR>', { noremap = true, silent = true })

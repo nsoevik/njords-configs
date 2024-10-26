@@ -1,0 +1,6 @@
+# Must install a nerdfont like below then change terminal settings:
+wget -P ~/.local/share/fonts https://github.com/ryanoasis/nerd-fonts/releases/download/v3.2.1/Lilex.zip \
+&& cd ~/.local/share/fonts \
+&& unzip Lilex.zip \
+&& rm Lilex.zip \
+&& fc-cache -fv
