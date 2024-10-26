@@ -19,14 +19,19 @@ return require('packer').startup(function(use)
   use {
 	  'nvim-telescope/telescope.nvim', tag = '0.1.6',
 	  -- or                            , branch = '0.1.x',
-	  requires = { {'nvim-lua/plenary.nvim'} }
+	  requires = { {'nvim-lua/plenary.nvim'}, {'nvim-telescope/telescope-live-grep-args.nvim'} },
   }
+  --
+  -------------------- Barbar (tabs) -----------------
+  use 'nvim-tree/nvim-web-devicons'
+  use 'lewis6991/gitsigns.nvim'
+  use 'romgrk/barbar.nvim'
   
   --- Colorscheme ---
-  use { "scottmckendry/cyberdream.nvim" }
+  use { "eldritch-theme/eldritch.nvim" }
   
   --- Treesitter ----
-  use('nvim-treesitter/nvim-treesitter', { run = ':TSUpdate'})
+  use{'nvim-treesitter/nvim-treesitter', tag = 'v0.9.0'}
 
   --- Nvim Tree -----
   use {
@@ -35,6 +40,8 @@ return require('packer').startup(function(use)
           'nvim-tree/nvim-web-devicons', -- optional
       },
   }
+
+  use {'marko-cerovac/material.nvim'}
 
   use 'ConradIrwin/vim-bracketed-paste'
 

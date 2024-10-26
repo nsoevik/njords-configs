@@ -23,7 +23,11 @@ require("nvim-tree").setup({
   view = {
       width = 58,
       relativenumber = true,
+      number = true,
   },
+  update_focused_file = {
+      enable = true,
+    }
 })
 
 -------------------- LSP --------------------
@@ -41,10 +45,26 @@ require('mason-lspconfig').setup({
   -- Replace the language servers listed here 
   -- with the ones you want to install
   -- https://github.com/williamboman/mason-lspconfig.nvim/blob/main/doc/server-mapping.md
-  ensure_installed = { 'html', 'ts_ls', 'cssls', 'dockerls' },
+  ensure_installed = { 'lua-language-server', 'omnisharp', 'html', 'ts_ls', 'cssls', 'dockerls', 'pylsp' },
   handlers = {
       function(server_name)
           lsp[server_name].setup({})
+      end,
+
+      -- python
+      pylsp = function()
+          lsp.pylsp.setup({
+              settings = {
+                  pylsp = {
+                      plugins = {
+                          pyflakes = { enabled = true },  -- For linting
+                          pylint = { enabled = true },    -- Optionally, enable pylint
+                          pycodestyle = { enabled = true, maxLineLength = 100 },
+                          pylsp_mypy = { enabled = true },  -- Optionally, enable MyPy
+                      },
+                  },
+              },
+          })
       end,
 
       -- custom handler for gopls
@@ -54,7 +74,7 @@ require('mason-lspconfig').setup({
               settings = {
                   gopls = {
                       env = {
-                          GOPACKAGESDRIVER = "~/repos/satcode/payload/tools/gopackagesdriver.sh",
+                          GOPACKAGESDRIVER = "/home/nsoevik/repos/satcode/payload/tools/gopackagesdriver.sh",
                           GOPACKAGESDRIVER_BAZEL_BUILD_FLAGS = "--strategy=GoStdlibList=local --linkopt=-Wl,--strip-all --config=armv7l",
                           BAZEL_NOTIFY_THRESH = "999999999",
                       },
@@ -100,4 +120,49 @@ lsp.setup()
 require("autoclose").setup()
 
 -------------------- Colorscheme -------------------
-vim.cmd[[colorscheme cyberdream]]
+vim.o.background = "light"  -- Change to "light" if you want the lighter theme
+
+vim.cmd('highlight Normal guibg=none')
+vim.o.background = "dark"
+vim.cmd[[colorscheme eldritch]]
+
+-------------------- Barbar ------------------------
+require'barbar'.setup {
+  icons = {
+    modified = { button = '●' },
+    filetype = { enabled = true },
+    buffer_index = true,
+  },
+  auto_hide = 0,
+  focus_on_close = 'right',
+  insert_at_end = true,
+}
+
+-------------------- Ripgrep Telescope ------------------------
+local telescope = require("telescope")
+local lga_actions = require("telescope-live-grep-args.actions")
+local actions = require("telescope.actions")
+
+telescope.setup {
+  extensions = {
+    live_grep_args = {
+      auto_quoting = false, -- enable/disable auto-quoting
+      -- define mappings, e.g.
+      mappings = { -- extend mappings
+        i = {
+          ["<C-k>"] = lga_actions.quote_prompt(),
+          ["<C-i>"] = lga_actions.quote_prompt({ postfix = " --iglob " }),
+          -- freeze the current list and start a fuzzy search in the frozen list
+          ["<C-space>"] = actions.to_fuzzy_refine,
+        },
+      },
+      -- ... also accepts theme settings, for example:
+      -- theme = "dropdown", -- use dropdown theme
+      -- theme = { }, -- use own theme spec
+      -- layout_config = { mirror=true }, -- mirror preview pane
+    }
+  }
+}
+
+-- don't forget to load the extension
+telescope.load_extension("live_grep_args")
