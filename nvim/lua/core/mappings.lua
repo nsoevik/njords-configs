@@ -1,5 +1,4 @@
 local builtin = require('telescope.builtin')
-vim.g.mapleader = " " -- easy to reach leader key
 
 -- Before nvim tree, used this to get to explorer
 -- vim.keymap.set("n", "-", vim.cmd.Ex) -- need nvim 0.8+
@@ -31,7 +30,7 @@ end, {})
 -- Barbar
 vim.keymap.set('n', '<F12>', ':BufferNext<CR>', { noremap = true, silent = true })
 vim.keymap.set('n', '<S-F12>', ':BufferPrevious<CR>', { noremap = true, silent = true })
-vim.keymap.set('n', '<leader>bb', ':BufferClose<CR>', { noremap = true, silent = true })
+vim.keymap.set('n', '<leader>x', ':BufferClose<CR>', { noremap = true, silent = true })
 vim.keymap.set('n', '<leader>b1', ':BufferGoto 1<CR>', { noremap = true, silent = true })
 vim.keymap.set('n', '<leader>b2', ':BufferGoto 2<CR>', { noremap = true, silent = true })
 vim.keymap.set('n', '<leader>b3', ':BufferGoto 3<CR>', { noremap = true, silent = true })
@@ -58,3 +57,14 @@ cmp.setup({
     },
 })
 
+vim.keymap.set('n', '<leader>t', ':NvimTreeToggle<cr>', {})
+
+local colorschemes = {'eldritch', 'fluoromachine', 'material', 'catppuccin'}
+local colorscheme_index = 1  -- Start with the first color scheme
+function _G.toggle_colorscheme()
+  colorscheme_index = (colorscheme_index % #colorschemes) + 1
+  vim.cmd('colorscheme ' .. colorschemes[colorscheme_index])
+end
+vim.keymap.set('n', '<leader>mm', ':lua toggle_colorscheme()<CR>', { noremap = true, silent = true })
+
+vim.keymap.set('n', '<leader>fo', ':lua vim.lsp.buf.format()<CR>', { noremap = true, silent = true })

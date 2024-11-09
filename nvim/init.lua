@@ -1,6 +1,99 @@
+local ensure_packer = function()
+  local fn = vim.fn
+  local install_path = fn.stdpath('data')..'/site/pack/packer/start/packer.nvim'
+  if fn.empty(fn.glob(install_path)) > 0 then
+ vim.keymap.set('n', '<leader>fo', ':lua vim.lsp.buf.formatting()<CR>', { noremap = true, silent = true })
+   fn.system({'git', 'clone', '--depth', '1', 'https://github.com/wbthomason/packer.nvim', install_path})
+    vim.cmd [[packadd packer.nvim]]
+    return true
+  end
+  return false
+end
+
+local packer_bootstrap = ensure_packer()
+
+require('packer').startup(function(use)
+  use 'wbthomason/packer.nvim'
+  ---------- My plugins here ------------
+
+  --- Telescope ---
+  use {
+          'nvim-telescope/telescope.nvim', tag = '0.1.6',
+          -- or                            , branch = '0.1.x',
+          requires = { {'nvim-lua/plenary.nvim'}, {'nvim-telescope/telescope-live-grep-args.nvim'} },
+  }
+  --
+  -------------------- Barbar (tabs) -----------------
+  use 'nvim-tree/nvim-web-devicons'
+  use 'lewis6991/gitsigns.nvim'
+  use 'romgrk/barbar.nvim'
+
+  --- Colorscheme ---
+  use { "catppuccin/nvim", name = "catppuccin", priority = 1000 }
+  use { "marko-cerovac/material.nvim" }
+  use { "eldritch-theme/eldritch.nvim", priority=1000}
+  use {
+        'maxmx03/fluoromachine.nvim',
+        lazy = false,
+        priority = 1000,
+        config = function ()
+         local fm = require 'fluoromachine'
+
+         fm.setup {
+            glow = true,
+            theme = 'fluoromachine',
+            transparent = false,
+         }
+
+         vim.cmd.colorscheme 'fluoromachine'
+        end
+    }
+
+  --- Treesitter ----
+  use{'nvim-treesitter/nvim-treesitter', tag = 'v0.9.0'}
+
+  --- Nvim Tree -----
+  use {
+      'nvim-tree/nvim-tree.lua',
+      requires = {
+          'nvim-tree/nvim-web-devicons', -- optional
+      },
+  }
+
+  use {'marko-cerovac/material.nvim'}
+
+  use 'ConradIrwin/vim-bracketed-paste'
+
+  --- LSP Zero ------
+  use {
+      'VonHeikemen/lsp-zero.nvim',
+      branch = 'v3.x',
+      requires = {
+          --- Uncomment the two plugins below if you want to manage the language servers from neovim
+          {'williamboman/mason.nvim'},
+          {'williamboman/mason-lspconfig.nvim'},
+          {'neovim/nvim-lspconfig'},
+          {'hrsh7th/nvim-cmp'},
+          {'hrsh7th/cmp-nvim-lsp'},
+          {'L3MON4D3/LuaSnip'},
+      }
+  }
+
+  --- Auto close braces, quotes, etc ------
+  use 'm4xshen/autoclose.nvim'
+
+  ---------------------------------------
+  -- Automatically set up your configuration after cloning packer.nvim
+  -- Put this at the end after all plugins
+  -- Issues when I use packer_bootstrap here
+  if true then
+    require('packer').sync()
+  end
+end)
+
+vim.g.mapleader = " " -- easy to reach leader key
 require('core.mappings')
 require('core.options')
-require('core.plugins')
 
 ----------- NVIM-TREE -----------
 -- disable netrw at the very start of your init.lua
@@ -45,7 +138,7 @@ require('mason-lspconfig').setup({
   -- Replace the language servers listed here 
   -- with the ones you want to install
   -- https://github.com/williamboman/mason-lspconfig.nvim/blob/main/doc/server-mapping.md
-  ensure_installed = { 'lua-language-server', 'omnisharp', 'html', 'ts_ls', 'cssls', 'dockerls', 'pylsp' },
+  ensure_installed = { 'lua_ls', 'omnisharp', 'html', 'ts_ls', 'cssls', 'dockerls', 'pylsp' },
   handlers = {
       function(server_name)
           lsp[server_name].setup({})
@@ -120,10 +213,7 @@ lsp.setup()
 require("autoclose").setup()
 
 -------------------- Colorscheme -------------------
-vim.o.background = "light"  -- Change to "light" if you want the lighter theme
-
 vim.cmd('highlight Normal guibg=none')
-vim.o.background = "dark"
 vim.cmd[[colorscheme eldritch]]
 
 -------------------- Barbar ------------------------
@@ -166,3 +256,45 @@ telescope.setup {
 
 -- don't forget to load the extension
 telescope.load_extension("live_grep_args")
+
+
+
+require'nvim-treesitter.configs'.setup {
+  -- A list of parser names, or "all" (the five listed parsers should always be installed)
+  ensure_installed = { "c", "lua", "vim", "vimdoc", "query", "python", "c_sharp", "go", "javascript", "css", "html" },
+
+  -- Install parsers synchronously (only applied to `ensure_installed`)
+  sync_install = false,
+
+  -- Automatically install missing parsers when entering buffer
+  -- Recommendation: set to false if you don't have `tree-sitter` CLI installed locally
+  auto_install = true,
+
+  ---- If you need to change the installation directory of the parsers (see -> Advanced Setup)
+  -- parser_install_dir = "/some/path/to/store/parsers", -- Remember to run vim.opt.runtimepath:append("/some/path/to/store/parsers")!
+
+  highlight = {
+    enable = true,
+
+    -- NOTE: these are the names of the parsers and not the filetype. (for example if you want to
+    -- disable highlighting for the `tex` filetype, you need to include `latex` in this list as this is
+    -- the name of the parser)
+    -- list of language that will be disabled
+    disable = { "c", "rust" },
+    -- Or use a function for more flexibility, e.g. to disable slow treesitter highlight for large files
+    disable = function(lang, buf)
+        local max_filesize = 100 * 1024 -- 100 KB
+        local ok, stats = pcall(vim.loop.fs_stat, vim.api.nvim_buf_get_name(buf))
+        if ok and stats and stats.size > max_filesize then
+            return true
+        end
+    end,
+
+    -- Setting this to true will run `:h syntax` and tree-sitter at the same time.
+    -- Set this to `true` if you depend on 'syntax' being enabled (like for indentation).
+    -- Using this option may slow down your editor, and you may see some duplicate highlights.
+    -- Instead of true it can also be a list of languages
+    additional_vim_regex_highlighting = false,
+  },
+}
+
