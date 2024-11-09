@@ -1,29 +1,32 @@
 local builtin = require('telescope.builtin')
+local actions = require('telescope.actions')
 
 -- Before nvim tree, used this to get to explorer
 -- vim.keymap.set("n", "-", vim.cmd.Ex) -- need nvim 0.8+
 
 vim.keymap.set('n', '<leader>ff', builtin.find_files, {})
--- vim.keymap.set('n', '<leader>fg', builtin.live_grep, {})
-vim.keymap.set("n", "<leader>fg", ":lua require('telescope').extensions.live_grep_args.live_grep_args()<CR>")
+vim.keymap.set('n', '<leader>fg', builtin.live_grep, {})
 
 vim.keymap.set('n', '<leader>fb', builtin.buffers, {})
 vim.keymap.set('n', '<leader>fh', builtin.help_tags, {})
--- vim.keymap.set('n', '<C-g>', builtin.cycle_history_next, {})
--- vim.keymap.set('n', '<C-f>', builtin.cycle_history_prev, {})
-vim.keymap.set('n', '<C-h>', '<C-w><Left>', {})
-vim.keymap.set('n', '<C-l>', '<C-w><Right>', {})
-vim.keymap.set('n', '<C-j>', '<C-w><Down>', {})
-vim.keymap.set('n', '<C-k>', '<C-w><Up>', {})
+vim.keymap.set('n', '<leader>fj', builtin.resume, {})
+-- vim.keymap.set('n', '<leader>t', actions.cycle_history_next, {})
+-- vim.keymap.set('n', '<leader>y', actions.cycle_history_prev, {})
+vim.keymap.set('n', '<leader>h', '<C-w><Left>', {})
+vim.keymap.set('n', '<leader>l', '<C-w><Right>', {})
+vim.keymap.set('n', '<leader>j', '<C-w><Down>', {})
+vim.keymap.set('n', '<leader>k', '<C-w><Up>', {})
 vim.keymap.set('n', '<leader>|', ':vsplit<cr>', {})
 vim.keymap.set('n', '<leader>_', ':split<cr>', {})
+vim.keymap.set('n', '<leader>fh', ':Telescope search_history<CR>', { noremap = true, silent = true })
+
 
 vim.keymap.set('n', '<Right>', ':vertical resize -2<CR>', { silent = true })
 vim.keymap.set('n', '<Down>', ':resize +2<CR>', { silent = true })
 vim.keymap.set('n', '<Up>', ':resize -2<CR>', { silent = true })
 vim.keymap.set('n', '<Left>', ':vertical resize +2<CR>', { silent = true })
 
-vim.api.nvim_create_user_command('Reload', function()
+vim.api.nvim_create_user_command('R', function()
       vim.cmd('source $MYVIMRC')
 end, {})
 
