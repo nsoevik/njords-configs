@@ -4,3 +4,7 @@ wget -P ~/.local/share/fonts https://github.com/ryanoasis/nerd-fonts/releases/do
 && unzip Lilex.zip \
 && rm Lilex.zip \
 && fc-cache -fv
+
+# Common problems
+Cryptic treesitter problems can be solved by:
+:TSInstall all and :TSUpdate

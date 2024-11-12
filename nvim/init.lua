@@ -2,7 +2,6 @@ local ensure_packer = function()
     local fn = vim.fn
     local install_path = fn.stdpath('data') .. '/site/pack/packer/start/packer.nvim'
     if fn.empty(fn.glob(install_path)) > 0 then
-        vim.keymap.set('n', '<leader>fo', ':lua vim.lsp.buf.formatting()<CR>', { noremap = true, silent = true })
         fn.system({ 'git', 'clone', '--depth', '1', 'https://github.com/wbthomason/packer.nvim', install_path })
         vim.cmd [[packadd packer.nvim]]
         return true
@@ -23,10 +22,8 @@ require('packer').startup(function(use)
         requires = { { 'nvim-lua/plenary.nvim' }, { 'nvim-telescope/telescope-live-grep-args.nvim' } },
     }
     --
-    -------------------- Barbar (tabs) -----------------
     use 'nvim-tree/nvim-web-devicons'
     use 'lewis6991/gitsigns.nvim'
-    use 'romgrk/barbar.nvim'
 
     --- Colorscheme ---
     use { "catppuccin/nvim", name = "catppuccin", priority = 1000 }
@@ -49,8 +46,16 @@ require('packer').startup(function(use)
         end
     }
 
+    use {
+        'ThePrimeagen/harpoon',
+        requires = { 'nvim-lua/plenary.nvim' }, -- Harpoon depends on plenary.nvim
+        config = function()
+            require("harpoon").setup({})
+        end
+    }
+
     --- Treesitter ----
-    use { 'nvim-treesitter/nvim-treesitter' }
+    use { 'nvim-treesitter/nvim-treesitter', run = ':TSUpdate' }
 
     --- Nvim Tree -----
     use {
@@ -74,7 +79,7 @@ require('packer').startup(function(use)
             { 'hrsh7th/nvim-cmp' },
             { 'hrsh7th/cmp-nvim-lsp' },
             { 'L3MON4D3/LuaSnip' },
-        }
+       }
     }
 
     --- Auto close braces, quotes, etc ------
@@ -88,10 +93,6 @@ require('packer').startup(function(use)
         require('packer').sync()
     end
 end)
-
-vim.g.mapleader = " " -- easy to reach leader key
-require('core.mappings')
-require('core.options')
 
 ----------- NVIM-TREE -----------
 -- disable netrw at the very start of your init.lua
@@ -148,8 +149,8 @@ require('mason-lspconfig').setup({
                 settings = {
                     pylsp = {
                         plugins = {
-                            pyflakes = { enabled = true }, -- For linting
-                            pylint = { enabled = true },   -- Optionally, enable pylint
+                            pyflakes = { enabled = true },   -- For linting
+                            pylint = { enabled = true },     -- Optionally, enable pylint
                             pycodestyle = { enabled = true, maxLineLength = 100 },
                             pylsp_mypy = { enabled = true }, -- Optionally, enable MyPy
                         },
@@ -215,18 +216,6 @@ require("autoclose").setup()
 vim.cmd('highlight Normal guibg=none')
 vim.cmd [[colorscheme eldritch]]
 
--------------------- Barbar ------------------------
-require 'barbar'.setup {
-    icons = {
-        modified = { button = '●' },
-        filetype = { enabled = true },
-        buffer_index = true,
-    },
-    auto_hide = 0,
-    focus_on_close = 'right',
-    insert_at_end = true,
-}
-
 -------------------- Ripgrep Telescope ------------------------
 local telescope = require("telescope")
 local lga_actions = require("telescope-live-grep-args.actions")
@@ -237,10 +226,10 @@ telescope.setup {
         live_grep_args = {
             auto_quoting = false, -- enable/disable auto-quoting
             -- define mappings, e.g.
-            mappings = {    -- extend mappings
+            mappings = {          -- extend mappings
                 i = {
-                    ["<C-k>"] = lga_actions.quote_prompt(),
-                    ["<C-i>"] = lga_actions.quote_prompt({ postfix = " --iglob " }),
+                    ["<C-q>"] = lga_actions.quote_prompt(),
+                    ["<C-g>"] = lga_actions.quote_prompt({ postfix = " --iglob " }),
                     -- freeze the current list and start a fuzzy search in the frozen list
                     ["<C-space>"] = actions.to_fuzzy_refine,
                 },
@@ -258,9 +247,10 @@ telescope.load_extension("live_grep_args")
 
 
 
+
 require 'nvim-treesitter.configs'.setup {
     -- A list of parser names, or "all" (the five listed parsers should always be installed)
-    ensure_installed = { "c", "lua", "vim", "vimdoc", "query", "python", "c_sharp", "go", "javascript", "css", "html" },
+    ensure_installed = { "lua", "vim", "vimdoc", "python", "go", "javascript", "css", "html" },
 
     -- Install parsers synchronously (only applied to `ensure_installed`)
     sync_install = false,
@@ -296,3 +286,8 @@ require 'nvim-treesitter.configs'.setup {
         additional_vim_regex_highlighting = false,
     },
 }
+
+vim.g.mapleader = " " -- easy to reach leader key
+require('core.mappings')
+require('core.options')
+
