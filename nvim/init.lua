@@ -28,6 +28,7 @@ require('packer').startup(function(use)
     --- Colorscheme ---
     use { "catppuccin/nvim", name = "catppuccin", priority = 1000 }
     use { "marko-cerovac/material.nvim" }
+    use { "navarasu/onedark.nvim" }
     use { "eldritch-theme/eldritch.nvim", priority = 1000 }
     use {
         'maxmx03/fluoromachine.nvim',
@@ -197,9 +198,9 @@ local lsp = require('lsp-zero').preset({})
 local cmp = require('cmp')
 cmp.setup({
     mapping = {
-        ['<Tab>'] = cmp.mapping.select_next_item({ behavior = cmp.SelectBehavior.Select }),
-        ['<S-Tab>'] = cmp.mapping.select_prev_item({ behavior = cmp.SelectBehavior.Select }),
-        ['<CR>'] = cmp.mapping.confirm({ select = true }),
+        ['<C-j>'] = cmp.mapping.select_next_item({ behavior = cmp.SelectBehavior.Select }),
+        ['<C-k>'] = cmp.mapping.select_prev_item({ behavior = cmp.SelectBehavior.Select }),
+        ['<Tab>'] = cmp.mapping.confirm({ select = true }),
     },
     sources = {
         { name = 'nvim_lsp' },
@@ -250,7 +251,7 @@ telescope.load_extension("live_grep_args")
 
 require 'nvim-treesitter.configs'.setup {
     -- A list of parser names, or "all" (the five listed parsers should always be installed)
-    ensure_installed = { "lua", "vim", "vimdoc", "python", "go", "javascript", "css", "html" },
+    ensure_installed = { "lua", "vim", "vimdoc", "python", "go", "javascript", "css", "html", "markdown", "markdown_inline" },
 
     -- Install parsers synchronously (only applied to `ensure_installed`)
     sync_install = false,
