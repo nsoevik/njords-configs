@@ -11,8 +11,8 @@ vim.opt.expandtab = true            -- tabs are spaces, mainly because of python
 vim.opt.termguicolors = true        -- enabl 24-bit RGB color in the TUI
 
 -- Searching
-vim.opt.hlsearch = true
 vim.opt.incsearch = true            -- search as characters are entered
+vim.opt.hlsearch = true            -- do not highlight matches
 vim.opt.ignorecase = true           -- ignore case in searches by default
 vim.opt.smartcase = true            -- but make it case sensitive if an uppercase is entered
 
