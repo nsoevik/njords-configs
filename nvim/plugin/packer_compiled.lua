@@ -89,22 +89,6 @@ _G.packer_plugins = {
     path = "/home/nsoevik/.local/share/nvim/site/pack/packer/start/cmp-nvim-lsp",
     url = "https://github.com/hrsh7th/cmp-nvim-lsp"
   },
-  ["eldritch.nvim"] = {
-    loaded = true,
-    path = "/home/nsoevik/.local/share/nvim/site/pack/packer/start/eldritch.nvim",
-    url = "https://github.com/eldritch-theme/eldritch.nvim"
-  },
-  ["everforest.nvim"] = {
-    loaded = true,
-    path = "/home/nsoevik/.local/share/nvim/site/pack/packer/start/everforest.nvim",
-    url = "https://github.com/sainnhe/everforest.nvim"
-  },
-  ["fluoromachine.nvim"] = {
-    config = { "\27LJ\2\n‘\1\0\0\4\0\a\0\f6\0\0\0'\2\1\0B\0\2\0029\1\2\0005\3\3\0B\1\2\0016\1\4\0009\1\5\0019\1\6\1'\3\1\0B\1\2\1K\0\1\0\16colorscheme\bcmd\bvim\1\0\3\ntheme\18fluoromachine\tglow\2\16transparent\1\nsetup\18fluoromachine\frequire\0" },
-    loaded = true,
-    path = "/home/nsoevik/.local/share/nvim/site/pack/packer/start/fluoromachine.nvim",
-    url = "https://github.com/maxmx03/fluoromachine.nvim"
-  },
   ["gitsigns.nvim"] = {
     loaded = true,
     path = "/home/nsoevik/.local/share/nvim/site/pack/packer/start/gitsigns.nvim",
@@ -120,6 +104,11 @@ _G.packer_plugins = {
     loaded = true,
     path = "/home/nsoevik/.local/share/nvim/site/pack/packer/start/lsp-zero.nvim",
     url = "https://github.com/VonHeikemen/lsp-zero.nvim"
+  },
+  ["lualine.nvim"] = {
+    loaded = true,
+    path = "/home/nsoevik/.local/share/nvim/site/pack/packer/start/lualine.nvim",
+    url = "https://github.com/nvim-lualine/lualine.nvim"
   },
   ["mason-lspconfig.nvim"] = {
     loaded = true,
@@ -151,6 +140,11 @@ _G.packer_plugins = {
     path = "/home/nsoevik/.local/share/nvim/site/pack/packer/start/nvim-lspconfig",
     url = "https://github.com/neovim/nvim-lspconfig"
   },
+  ["nvim-scrollbar"] = {
+    loaded = true,
+    path = "/home/nsoevik/.local/share/nvim/site/pack/packer/start/nvim-scrollbar",
+    url = "https://github.com/petertriho/nvim-scrollbar"
+  },
   ["nvim-tree.lua"] = {
     loaded = true,
     path = "/home/nsoevik/.local/share/nvim/site/pack/packer/start/nvim-tree.lua",
@@ -181,11 +175,6 @@ _G.packer_plugins = {
     path = "/home/nsoevik/.local/share/nvim/site/pack/packer/start/plenary.nvim",
     url = "https://github.com/nvim-lua/plenary.nvim"
   },
-  ["sonokai.nvim"] = {
-    loaded = true,
-    path = "/home/nsoevik/.local/share/nvim/site/pack/packer/start/sonokai.nvim",
-    url = "https://github.com/sainnhe/sonokai.nvim"
-  },
   ["telescope-live-grep-args.nvim"] = {
     loaded = true,
     path = "/home/nsoevik/.local/share/nvim/site/pack/packer/start/telescope-live-grep-args.nvim",
@@ -208,10 +197,6 @@ time([[Defining packer_plugins]], false)
 time([[Config for harpoon]], true)
 try_loadstring("\27LJ\2\n9\0\0\3\0\3\0\a6\0\0\0'\2\1\0B\0\2\0029\0\2\0004\2\0\0B\0\2\1K\0\1\0\nsetup\fharpoon\frequire\0", "config", "harpoon")
 time([[Config for harpoon]], false)
--- Config for: fluoromachine.nvim
-time([[Config for fluoromachine.nvim]], true)
-try_loadstring("\27LJ\2\n‘\1\0\0\4\0\a\0\f6\0\0\0'\2\1\0B\0\2\0029\1\2\0005\3\3\0B\1\2\0016\1\4\0009\1\5\0019\1\6\1'\3\1\0B\1\2\1K\0\1\0\16colorscheme\bcmd\bvim\1\0\3\ntheme\18fluoromachine\tglow\2\16transparent\1\nsetup\18fluoromachine\frequire\0", "config", "fluoromachine.nvim")
-time([[Config for fluoromachine.nvim]], false)
 
 _G._packer.inside_compile = false
 if _G._packer.needs_bufread == true then

@@ -51,7 +51,7 @@ cmp.setup({
 
 vim.keymap.set('n', '<leader>t', ':NvimTreeToggle<cr>', {})
 
-local colorschemes = { 'eldritch', 'fluoromachine', 'material', 'catppuccin' }
+local colorschemes = { 'catppuccin', 'material' }
 local colorscheme_index = 1 -- Start with the first color scheme
 function _G.toggle_colorscheme()
     colorscheme_index = (colorscheme_index % #colorschemes) + 1

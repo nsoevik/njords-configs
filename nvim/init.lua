@@ -29,30 +29,23 @@ require('packer').startup(function(use)
     use { "catppuccin/nvim", name = "catppuccin", priority = 1000 }
     use { "marko-cerovac/material.nvim" }
     use { "navarasu/onedark.nvim" }
-    use { "eldritch-theme/eldritch.nvim", priority = 1000 }
-    use {
-        'maxmx03/fluoromachine.nvim',
-        lazy = false,
-        priority = 1000,
-        config = function()
-            local fm = require 'fluoromachine'
 
-            fm.setup {
-                glow = true,
-                theme = 'fluoromachine',
-                transparent = false,
-            }
-
-            vim.cmd.colorscheme 'fluoromachine'
-        end
-    }
-
+    --- Harpoon
     use {
         'ThePrimeagen/harpoon',
         requires = { 'nvim-lua/plenary.nvim' }, -- Harpoon depends on plenary.nvim
         config = function()
             require("harpoon").setup({})
         end
+    }
+
+    --- Scrollbar
+    use("petertriho/nvim-scrollbar")
+
+    --- Status line
+    use {
+        'nvim-lualine/lualine.nvim',
+        requires = { 'nvim-tree/nvim-web-devicons', opt = true }
     }
 
     --- Treesitter ----
@@ -80,7 +73,7 @@ require('packer').startup(function(use)
             { 'hrsh7th/nvim-cmp' },
             { 'hrsh7th/cmp-nvim-lsp' },
             { 'L3MON4D3/LuaSnip' },
-       }
+        }
     }
 
     --- Auto close braces, quotes, etc ------
@@ -114,14 +107,18 @@ require("nvim-tree").setup({
         dotfiles = false,
     },
     view = {
-        width = 58,
         relativenumber = true,
         number = true,
     },
     update_focused_file = {
         enable = true,
+        update_root = {
+            enable = true,
+        }
     }
 })
+
+require("scrollbar").setup()
 
 -------------------- LSP --------------------
 local lsp_zero = require('lsp-zero')
@@ -215,7 +212,7 @@ require("autoclose").setup()
 
 -------------------- Colorscheme -------------------
 vim.cmd('highlight Normal guibg=none')
-vim.cmd [[colorscheme eldritch]]
+vim.cmd [[colorscheme material]]
 
 -------------------- Ripgrep Telescope ------------------------
 local telescope = require("telescope")
@@ -232,7 +229,7 @@ telescope.setup {
                     ["<C-q>"] = lga_actions.quote_prompt(),
                     ["<C-g>"] = lga_actions.quote_prompt({ postfix = " --iglob " }),
                     -- freeze the current list and start a fuzzy search in the frozen list
-                    ["<C-space>"] = actions.to_fuzzy_refine,
+                    ["<C-r>"] = actions.to_fuzzy_refine,
                 },
             },
             -- ... also accepts theme settings, for example:
@@ -251,7 +248,7 @@ telescope.load_extension("live_grep_args")
 
 require 'nvim-treesitter.configs'.setup {
     -- A list of parser names, or "all" (the five listed parsers should always be installed)
-    ensure_installed = { "lua", "vim", "vimdoc", "python", "go", "javascript", "css", "html", "markdown", "markdown_inline" },
+    ensure_installed = { "lua", "vim", "vimdoc", "python", "go", "javascript", "css", "html", "markdown", "markdown_inline", "json" },
 
     -- Install parsers synchronously (only applied to `ensure_installed`)
     sync_install = false,
@@ -288,7 +285,49 @@ require 'nvim-treesitter.configs'.setup {
     },
 }
 
+require('lualine').setup {
+  options = {
+    icons_enabled = true,
+    theme = 'auto',
+    component_separators = { left = '', right = ''},
+    section_separators = { left = '', right = ''},
+    disabled_filetypes = {
+      statusline = {},
+      winbar = {},
+    },
+    ignore_focus = {},
+    always_divide_middle = false,
+    always_show_tabline = true,
+    globalstatus = false,
+    refresh = {
+      statusline = 100,
+      tabline = 100,
+      winbar = 100,
+    }
+  },
+  sections = {
+    lualine_a = {'mode'},
+    lualine_b = {'branch'},
+    lualine_c = {'filename'},
+    lualine_x = {'searchcount'},
+    lualine_y = {'progress'},
+    lualine_z = {'location'}
+  },
+  inactive_sections = {
+    lualine_a = {},
+    lualine_b = {},
+    lualine_c = {'filename'},
+    lualine_x = {'location'},
+    lualine_y = {'progress'},
+    lualine_z = {}
+  },
+  tabline = {},
+  winbar = {},
+  inactive_winbar = {},
+  extensions = {}
+}
+
+
 vim.g.mapleader = " " -- easy to reach leader key
 require('core.mappings')
 require('core.options')
-
