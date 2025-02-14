@@ -34,9 +34,14 @@ require "paq" {
     "folke/tokyonight.nvim",
 
     "f-person/git-blame.nvim",
+
+    -- "Isrothy/neominimap.nvim",
+    -- "lewis6991/gitsigns.nvim"
+    "robitx/gp.nvim",
+    "ThePrimeagen/harpoon"
 }
 
-vim.cmd("colorscheme tokyonight")
+vim.cmd("colorscheme tokyonight") -- Apply changes
 require("autoclose").setup()
 
 -------------------- LSP ------------------------
@@ -44,13 +49,21 @@ require("autoclose").setup()
 local lspconfig = require("lspconfig")
 require("mason").setup()
 require("mason-lspconfig").setup {
-    ensure_installed = { "lua_ls", "rust_analyzer", "ts_ls", "ast_grep", "buf_ls", "jedi_language_server", "yamlls" },
+    ensure_installed = { "lua_ls", "rust_analyzer", "ts_ls", "ast_grep", "buf_ls", "jedi_language_server", "yamlls", },
     handlers = {
         function(server_name)
-            if server_name ~= "gopls" then -- Prevents gopls from being configured twice
+            if server_name ~= "gopls" and server_name ~= "omnisharp" then -- Prevents gopls from being configured twice
                 lspconfig[server_name].setup({})
             end
         end,
+
+        omnisharp = function()
+            lspconfig.omnisharp.setup {
+                cmd = { "/home/nsoevik/.local/share/nvim/mason/bin/omnisharp" },
+                enable_roslyn_analyzers = true,
+            }
+        end,
+
 
         gopls = function()
             lspconfig.gopls.setup({
@@ -85,12 +98,11 @@ require("mason-lspconfig").setup {
         end,
     }
 }
-
 -------------------- PARSING ------------------------
 
 require 'nvim-treesitter.configs'.setup {
     -- A list of parser names, or "all" (the five listed parsers should always be installed)
-    ensure_installed = { "rust", "lua", "vim", "vimdoc", "python", "go", "javascript", "css", "html", "markdown", "markdown_inline", "json" },
+    ensure_installed = { "c_sharp", "rust", "lua", "vim", "vimdoc", "python", "go", "javascript", "css", "html", "markdown", "markdown_inline", "json" },
 
     -- Install parsers synchronously (only applied to `ensure_installed`)
     sync_install = false,
@@ -101,7 +113,6 @@ require 'nvim-treesitter.configs'.setup {
 
     ---- If you need to change the installation directory of the parsers (see -> Advanced Setup)
     -- parser_install_dir = "/some/path/to/store/parsers", -- Remember to run vim.opt.runtimepath:append("/some/path/to/store/parsers")!
-
     highlight = {
         enable = true,
 
@@ -129,47 +140,12 @@ require 'nvim-treesitter.configs'.setup {
 -------------------- Ripgrep Telescope ------------------------
 local telescope = require("telescope")
 local actions = require("telescope.actions")
-local action_state = require("telescope.actions.state")
 local lga_actions = require("telescope-live-grep-args.actions")
 
 telescope.setup {
-    defaults = {
-        mappings = {
-            i = {
-                ["<CR>"] = function(prompt_bufnr)
-                    vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("<Esc>", true, false, true), "n", false)
-                    local entry = action_state.get_selected_entry()
-                    if entry and (entry.path or entry.filename) then
-                        local filepath = entry.path or entry.filename -- Use correct field based on picker
-                        local bufnr = vim.fn.bufnr(filepath)
-                        if bufnr ~= -1 then
-                            vim.cmd("tab sbuffer " .. bufnr)                   -- Switch to existing buffer in a new tab
-                        else
-                            vim.cmd("tabnew " .. vim.fn.fnameescape(filepath)) -- Open new file in a tab
-                        end
-                    else
-                        vim.notify("No file selected", vim.log.levels.WARN)
-                    end
-                    pcall(actions.close, prompt_bufnr) -- Close telescope safely
-                end
-            },
-            n = {
-                ["<CR>"] = function(prompt_bufnr)
-                    local entry = action_state.get_selected_entry()
-                    if entry and (entry.path or entry.filename) then
-                        local filepath = entry.path or entry.filename -- Use correct field based on picker
-                        local bufnr = vim.fn.bufnr(filepath)
-                        if bufnr ~= -1 then
-                            vim.cmd("tab sbuffer " .. bufnr)                   -- Switch to existing buffer in a new tab
-                        else
-                            vim.cmd("tabnew " .. vim.fn.fnameescape(filepath)) -- Open new file in a tab
-                        end
-                    else
-                        vim.notify("No file selected", vim.log.levels.WARN)
-                    end
-                    pcall(actions.close, prompt_bufnr) -- Close telescope safely
-                end
-            }
+    pickers = {
+        live_grep = {
+            additional_args = function() return { "--hidden" } end
         }
     },
     extensions = {
@@ -181,23 +157,6 @@ telescope.setup {
                     ["<C-g>"] = lga_actions.quote_prompt({ postfix = " --iglob " }),
                     -- freeze the current list and start a fuzzy search in the frozen list
                     ["<C-r>"] = actions.to_fuzzy_refine,
-                    ["<CR>"] = function(prompt_bufnr)
-                        vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("<Esc>", true, false, true), "n", false)
-                        local entry = action_state.get_selected_entry()
-                        if entry and entry.filename then
-                            vim.cmd("tabnew " .. vim.fn.fnameescape(entry.filename)) -- Open in a new tab safely
-                        end
-                        pcall(actions.close, prompt_bufnr)
-                    end
-                },
-                n = {
-                    ["<CR>"] = function(prompt_bufnr)
-                        local entry = action_state.get_selected_entry()
-                        if entry and entry.filename then
-                            vim.cmd("tabnew " .. vim.fn.fnameescape(entry.filename)) -- Open in a new tab safely
-                        end
-                        pcall(actions.close, prompt_bufnr)
-                    end
                 }
             }
         }
@@ -211,14 +170,7 @@ local cmp = require("cmp")
 
 cmp.setup({
     mapping = {
-        ["<Tab>"] = cmp.mapping(function(fallback)
-            if cmp.visible() then
-                cmp.confirm({ select = true }) -- Select the highlighted item
-            else
-                cmp.complete()
-            end
-        end, { "i", "s" }),
-
+        ["<Tab>"] = cmp.mapping.confirm({ select = true }), -- Select the highlighted item
         ["<Up>"] = cmp.mapping.select_prev_item(),
         ["<Down>"] = cmp.mapping.select_next_item(),
         ["<C-e>"] = cmp.mapping.close(),
@@ -228,6 +180,12 @@ cmp.setup({
         { name = "buffer" },   -- Buffer words
         { name = "path" },     -- File paths
     }),
+})
+
+-------------------- NVIM TREE ------------------------
+require("gp").setup({
+    openai_api_key =
+    ""
 })
 
 -------------------- NVIM TREE ------------------------
@@ -257,6 +215,10 @@ require("nvim-tree").setup({
     }
 })
 
+local window = function()
+    return vim.api.nvim_win_get_number(0)
+end
+
 -------------------- STATUS BAR ------------------------
 require('lualine').setup {
     options = {
@@ -279,71 +241,101 @@ require('lualine').setup {
         }
     },
     sections = {
-        lualine_a = { 'mode' },
-        lualine_b = { 'branch' },
-        lualine_c = { { 'filename', path = 1 } },
+        lualine_a = {
+            {
+                'filename',
+                draw_empty = true,
+                color = { fg = '#ffe0ff', bg = '#478799', gui = 'italic,bold' },
+                type = nil,
+                padding = 1,
+                fmt = nil,
+            }
+        },
+        lualine_b = {
+            {
+                'filename',
+                path = 1,
+                draw_empty = true,
+                color = { fg = '#BBBBBB', gui = 'italic,bold' },
+                type = nil,
+                padding = 1,
+                fmt = nil,
+            }
+        },
+        lualine_c = {},
         lualine_x = { 'searchcount' },
         lualine_y = { 'progress' },
-        lualine_z = { 'location' }
+        lualine_z = { window }
     },
     inactive_sections = {
-        lualine_a = {},
-        lualine_b = {},
-        lualine_c = { 'filename' },
-        lualine_x = { 'location' },
-        lualine_y = { 'progress' },
-        lualine_z = {}
+        lualine_a = {
+            {
+                'filename',
+                draw_empty = true,
+                color = { fg = '#ffe0ff', bg = '#C78374', gui = 'italic,bold' },
+                type = nil,
+                padding = 1,
+                fmt = nil,
+            }
+        },
+        lualine_b = {
+            {
+                'filename',
+                path = 1,
+                draw_empty = true,
+                color = { fg = '#BBBBBB', gui = 'italic,bold' },
+                type = nil,
+                padding = 1,
+                fmt = nil,
+            }
+        },
+        lualine_c = {},
+        lualine_x = {
+            {
+                'location',
+                draw_empty = true,
+                color = { fg = '#ffaa88', bg = '#C78374', gui = 'italic,bold' },
+                type = nil,
+                padding = 1,
+                fmt = nil,
+            }
+        },
+        lualine_y = {
+            {
+                'progress',
+                draw_empty = true,
+                color = { fg = '#ffaa88', bg = '#C78374', gui = 'italic,bold' },
+                type = nil,
+                padding = 1,
+                fmt = nil,
+            }
+        },
+        lualine_z = {
+            {
+                window,
+                draw_empty = true,
+                color = { fg = '#DDDDDD', bg = '#C95400', gui = 'italic,bold' },
+                type = nil,
+                padding = 1,
+                fmt = nil,
+            }
+        },
     },
-    tabline = {},
+    tabline = {
+    },
     winbar = {},
     inactive_winbar = {},
     extensions = {}
 }
 
-------------------- TABS -------------------
-vim.api.nvim_create_autocmd("BufEnter", {
-    callback = function()
-        local bufname = vim.fn.expand('%:p') -- Get full absolute path of file
-        -- print("bufname"..bufname)
-
-        -- Ignore non-file buffers & nvim-tree
-        if bufname == "" or vim.fn.isdirectory(bufname) == 1 or bufname:match("NvimTree_") then
-            return
-        end
-
-        -- Check if the buffer is already open in a tab
-        local current_buf = vim.fn.bufnr('%')
-        local existing_tab = nil
-        -- print("current buf "..current_buf)
-
-        for tabnr = 1, vim.fn.tabpagenr('$') do
-            for _, bufnr in ipairs(vim.fn.tabpagebuflist(tabnr)) do
-                if vim.fn.bufname(bufnr) == bufname then
-                    existing_tab = tabnr
-                    break
-                end
-            end
-            if existing_tab then break end
-        end
-
-        -- If the file is already open in another tab, switch to that tab
-        if existing_tab then
-            if existing_tab ~= vim.fn.tabpagenr() then
-                vim.cmd("tabnext " .. existing_tab)
-            end
-            return
-        end
-
-        -- If we are already in a tab, prevent duplicate openings
-        if vim.fn.tabpagenr('$') > 1 and vim.fn.buflisted(current_buf) == 1 then
-            return
-        end
-
-        -- Open the file in a new tab only if it's not already open anywhere
-        vim.cmd("tabnew " .. vim.fn.fnameescape(bufname))
-    end
+----------------- Harpoon ------------------
+require("harpoon").setup({
+    menu = {
+        width = vim.api.nvim_win_get_width(0) - 50,
+    }
 })
 
+------------------- TABS -------------------
 function _G.MyTabline()
     local s = ""
     for i = 1, vim.fn.tabpagenr('$') do
