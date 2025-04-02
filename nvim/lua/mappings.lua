@@ -36,6 +36,7 @@ vim.keymap.set('n', '<leader>e', '<cmd>lua vim.diagnostic.open_float()<CR>', { n
 vim.keymap.set('n', '<leader>t', ':NvimTreeToggle<cr>', {})
 
 vim.keymap.set("n", "gi", vim.lsp.buf.implementation, { noremap = true, silent = true })
+vim.keymap.set("n", "gt", vim.lsp.buf.code_action, { noremap = true, silent = true })
 vim.keymap.set('n', '<leader>fo', ':lua vim.lsp.buf.format()<CR>', { noremap = true, silent = true })
 vim.keymap.set('n', '<leader>t', ':NvimTreeFocus<cr>', {})
 

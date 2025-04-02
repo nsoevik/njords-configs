@@ -5,13 +5,10 @@ vim.g.loaded_netrwPlugin = 1
 -- git clone --depth=1 https://github.com/savq/paq-nvim.git ~/.local/share/nvim/site/pack/paqs/start/paq-nvim
 require "paq" {
     "savq/paq-nvim",
-
     "neovim/nvim-lspconfig",
-
     "nvim-telescope/telescope.nvim",
     "nvim-lua/plenary.nvim",
     "nvim-telescope/telescope-live-grep-args.nvim",
-
     "williamboman/mason.nvim",
     "williamboman/mason-lspconfig.nvim",
     "neovim/nvim-lspconfig",
@@ -19,22 +16,19 @@ require "paq" {
     "hrsh7th/cmp-nvim-lsp",
     "hrsh7th/cmp-buffer",
     "hrsh7th/cmp-path",
-
     { 'nvim-treesitter/nvim-treesitter', build = ':TSUpdate' },
-
     {
-        'nvim-lualine/lualine.nvim',
-        requires = { 'nvim-tree/nvim-web-devicons', opt = true }
-    },
 
+        'nvim-lualine/lualine.nvim',
+
+        requires = { 'nvim-tree/nvim-web-devicons', opt = true }
+
+    },
     "nvim-tree/nvim-tree.lua",
     'nvim-tree/nvim-web-devicons',
     'm4xshen/autoclose.nvim',
-
     "folke/tokyonight.nvim",
-
     "f-person/git-blame.nvim",
-
     -- "Isrothy/neominimap.nvim",
     -- "lewis6991/gitsigns.nvim"
     "robitx/gp.nvim",
@@ -42,29 +36,25 @@ require "paq" {
 }
 
 vim.cmd("colorscheme tokyonight") -- Apply changes
-require("autoclose").setup()
 
--------------------- LSP ------------------------
+require("autoclose").setup()
 
 local lspconfig = require("lspconfig")
 require("mason").setup()
 require("mason-lspconfig").setup {
-    ensure_installed = { "lua_ls", "rust_analyzer", "ts_ls", "ast_grep", "buf_ls", "jedi_language_server", "yamlls", },
+    ensure_installed = { "lua_ls", "rust_analyzer", "ast_grep", "buf_ls", "yamlls" },
     handlers = {
         function(server_name)
             if server_name ~= "gopls" and server_name ~= "omnisharp" then -- Prevents gopls from being configured twice
                 lspconfig[server_name].setup({})
             end
         end,
-
         omnisharp = function()
             lspconfig.omnisharp.setup {
                 cmd = { "/home/nsoevik/.local/share/nvim/mason/bin/omnisharp" },
                 enable_roslyn_analyzers = true,
             }
         end,
-
-
         gopls = function()
             lspconfig.gopls.setup({
                 root_dir = lspconfig.util.root_pattern("go.work", "go.mod", "WORKSPACE"),
@@ -98,10 +88,9 @@ require("mason-lspconfig").setup {
         end,
     }
 }
--------------------- PARSING ------------------------
 
+-------------------- PARSING ------------------------
 require 'nvim-treesitter.configs'.setup {
-    -- A list of parser names, or "all" (the five listed parsers should always be installed)
     ensure_installed = { "c_sharp", "rust", "lua", "vim", "vimdoc", "python", "go", "javascript", "css", "html", "markdown", "markdown_inline", "json" },
 
     -- Install parsers synchronously (only applied to `ensure_installed`)
@@ -115,7 +104,6 @@ require 'nvim-treesitter.configs'.setup {
     -- parser_install_dir = "/some/path/to/store/parsers", -- Remember to run vim.opt.runtimepath:append("/some/path/to/store/parsers")!
     highlight = {
         enable = true,
-
         -- NOTE: these are the names of the parsers and not the filetype. (for example if you want to
         -- disable highlighting for the `tex` filetype, you need to include `latex` in this list as this is
         -- the name of the parser)
@@ -142,10 +130,20 @@ local telescope = require("telescope")
 local actions = require("telescope.actions")
 local lga_actions = require("telescope-live-grep-args.actions")
 
+-- Show file name first in pickers
+local path_display = function(opts, path)
+    local tail = require("telescope.utils").path_tail(path)
+    return string.format("%s (%s)", tail, path), { { { 1, #tail }, "Constant" } }
+end
+
 telescope.setup {
     pickers = {
         live_grep = {
+            path_display = path_display,
             additional_args = function() return { "--hidden" } end
+        },
+        find_files = {
+            path_display = path_display,
         }
     },
     extensions = {
@@ -155,8 +153,6 @@ telescope.setup {
                 i = {
                     ["<C-q>"] = lga_actions.quote_prompt(),
                     ["<C-g>"] = lga_actions.quote_prompt({ postfix = " --iglob " }),
-                    -- freeze the current list and start a fuzzy search in the frozen list
-                    ["<C-r>"] = actions.to_fuzzy_refine,
                 }
             }
         }
@@ -256,13 +252,20 @@ require('lualine').setup {
                 'filename',
                 path = 1,
                 draw_empty = true,
-                color = { fg = '#BBBBBB', gui = 'italic,bold' },
+                color = { fg = '#bbbbbb', gui = 'italic,bold' },
                 type = nil,
                 padding = 1,
                 fmt = nil,
             }
         },
-        lualine_c = {},
+        lualine_c = {
+            {
+                "string.rep(' ', 50)",
+                draw_empty = true,
+                color = { fg = '#bbbbbb', bg = '#478799', gui = 'italic,bold' },
+                padding = 1,
+            }
+        },
         lualine_x = { 'searchcount' },
         lualine_y = { 'progress' },
         lualine_z = { window }
@@ -289,7 +292,14 @@ require('lualine').setup {
                 fmt = nil,
             }
         },
-        lualine_c = {},
+        lualine_c = {
+            {
+                "string.rep(' ', 50)",
+                draw_empty = true,
+                color = { fg = '#bbbbbb', bg = '#C78374', gui = 'italic,bold' },
+                padding = 1,
+            }
+        },
         lualine_x = {
             {
                 'location',
@@ -321,8 +331,7 @@ require('lualine').setup {
             }
         },
     },
-    tabline = {
-    },
+    tabline = {},
     winbar = {},
     inactive_winbar = {},
     extensions = {}
@@ -331,7 +340,7 @@ require('lualine').setup {
 ----------------- Harpoon ------------------
 require("harpoon").setup({
     menu = {
-        width = vim.api.nvim_win_get_width(0) - 50,
+        width = vim.api.nvim_win_get_width(0) - 10,
     }
 })
 
@@ -358,7 +367,6 @@ end
 
 vim.o.tabline = "%!v:lua.MyTabline()"
 vim.o.showtabline = 2 -- Always show the tabline
-
 vim.cmd [[
   highlight TabLine guifg=#ffffff guibg=#44475a
   highlight TabLineSel guifg=#ffffff guibg=#6272a4
@@ -366,6 +374,5 @@ vim.cmd [[
 ]]
 
 -------------------- IMPORTS ------------------------
-
 require("mappings")
 require("options")
