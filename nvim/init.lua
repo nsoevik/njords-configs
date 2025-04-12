@@ -5,10 +5,13 @@ vim.g.loaded_netrwPlugin = 1
 -- git clone --depth=1 https://github.com/savq/paq-nvim.git ~/.local/share/nvim/site/pack/paqs/start/paq-nvim
 require "paq" {
     "savq/paq-nvim",
+
     "neovim/nvim-lspconfig",
+
     "nvim-telescope/telescope.nvim",
     "nvim-lua/plenary.nvim",
     "nvim-telescope/telescope-live-grep-args.nvim",
+
     "williamboman/mason.nvim",
     "williamboman/mason-lspconfig.nvim",
     "neovim/nvim-lspconfig",
@@ -16,45 +19,55 @@ require "paq" {
     "hrsh7th/cmp-nvim-lsp",
     "hrsh7th/cmp-buffer",
     "hrsh7th/cmp-path",
+
     { 'nvim-treesitter/nvim-treesitter', build = ':TSUpdate' },
+
     {
-
         'nvim-lualine/lualine.nvim',
-
         requires = { 'nvim-tree/nvim-web-devicons', opt = true }
-
     },
+
     "nvim-tree/nvim-tree.lua",
     'nvim-tree/nvim-web-devicons',
     'm4xshen/autoclose.nvim',
+    "pocco81/auto-save.nvim",
+
     "folke/tokyonight.nvim",
+
     "f-person/git-blame.nvim",
+    "bluz71/vim-moonfly-colors",
+    "savq/melange-nvim",
+
     -- "Isrothy/neominimap.nvim",
-    -- "lewis6991/gitsigns.nvim"
+    -- "lewis6991/gitsigns.nvim",
     "robitx/gp.nvim",
     "ThePrimeagen/harpoon"
 }
 
-vim.cmd("colorscheme tokyonight") -- Apply changes
-
+vim.cmd("colorscheme melange") -- Apply changes
 require("autoclose").setup()
+
+-------------------- LSP ------------------------
 
 local lspconfig = require("lspconfig")
 require("mason").setup()
 require("mason-lspconfig").setup {
-    ensure_installed = { "lua_ls", "rust_analyzer", "ast_grep", "buf_ls", "yamlls" },
+    ensure_installed = { "lua_ls", "rust_analyzer", "ts_ls", "ast_grep", "buf_ls", "jedi_language_server", "yamlls", },
     handlers = {
         function(server_name)
             if server_name ~= "gopls" and server_name ~= "omnisharp" then -- Prevents gopls from being configured twice
                 lspconfig[server_name].setup({})
             end
         end,
+
         omnisharp = function()
             lspconfig.omnisharp.setup {
                 cmd = { "/home/nsoevik/.local/share/nvim/mason/bin/omnisharp" },
                 enable_roslyn_analyzers = true,
             }
         end,
+
+
         gopls = function()
             lspconfig.gopls.setup({
                 root_dir = lspconfig.util.root_pattern("go.work", "go.mod", "WORKSPACE"),
@@ -88,9 +101,10 @@ require("mason-lspconfig").setup {
         end,
     }
 }
-
 -------------------- PARSING ------------------------
+
 require 'nvim-treesitter.configs'.setup {
+    -- A list of parser names, or "all" (the five listed parsers should always be installed)
     ensure_installed = { "c_sharp", "rust", "lua", "vim", "vimdoc", "python", "go", "javascript", "css", "html", "markdown", "markdown_inline", "json" },
 
     -- Install parsers synchronously (only applied to `ensure_installed`)
@@ -104,6 +118,7 @@ require 'nvim-treesitter.configs'.setup {
     -- parser_install_dir = "/some/path/to/store/parsers", -- Remember to run vim.opt.runtimepath:append("/some/path/to/store/parsers")!
     highlight = {
         enable = true,
+
         -- NOTE: these are the names of the parsers and not the filetype. (for example if you want to
         -- disable highlighting for the `tex` filetype, you need to include `latex` in this list as this is
         -- the name of the parser)
@@ -216,10 +231,19 @@ local window = function()
 end
 
 -------------------- STATUS BAR ------------------------
+local function total_lines()
+    local count = vim.api.nvim_buf_line_count(0)
+    return vim.fn.line('.') .. '/' .. count
+end
+
+local function file_path()
+    return vim.fn.expand('%:~:.:h')
+end
+
 require('lualine').setup {
     options = {
         icons_enabled = true,
-        theme = 'auto',
+        theme = 'melange',
         component_separators = { left = '', right = '' },
         section_separators = { left = '', right = '' },
         disabled_filetypes = {
@@ -241,7 +265,6 @@ require('lualine').setup {
             {
                 'filename',
                 draw_empty = true,
-                color = { fg = '#ffe0ff', bg = '#478799', gui = 'italic,bold' },
                 type = nil,
                 padding = 1,
                 fmt = nil,
@@ -249,25 +272,32 @@ require('lualine').setup {
         },
         lualine_b = {
             {
-                'filename',
-                path = 1,
+                'custom',
                 draw_empty = true,
-                color = { fg = '#bbbbbb', gui = 'italic,bold' },
-                type = nil,
                 padding = 1,
-                fmt = nil,
+                fmt = function()
+                    return ''
+                end,
             }
         },
         lualine_c = {
             {
-                "string.rep(' ', 50)",
+                'custom',
                 draw_empty = true,
-                color = { fg = '#bbbbbb', bg = '#478799', gui = 'italic,bold' },
                 padding = 1,
+                fmt = file_path,
             }
         },
         lualine_x = { 'searchcount' },
-        lualine_y = { 'progress' },
+        lualine_y = {
+            {
+                'custom',
+                icon = '',
+                component_separators = '|',
+                separator = '|',
+                fmt = total_lines,
+            }
+        },
         lualine_z = { window }
     },
     inactive_sections = {
@@ -275,7 +305,6 @@ require('lualine').setup {
             {
                 'filename',
                 draw_empty = true,
-                color = { fg = '#ffe0ff', bg = '#C78374', gui = 'italic,bold' },
                 type = nil,
                 padding = 1,
                 fmt = nil,
@@ -283,55 +312,44 @@ require('lualine').setup {
         },
         lualine_b = {
             {
-                'filename',
-                path = 1,
+                'custom',
                 draw_empty = true,
-                color = { fg = '#BBBBBB', gui = 'italic,bold' },
-                type = nil,
                 padding = 1,
-                fmt = nil,
+                fmt = function()
+                    return ''
+                end,
             }
         },
         lualine_c = {
             {
-                "string.rep(' ', 50)",
+                'custom',
                 draw_empty = true,
-                color = { fg = '#bbbbbb', bg = '#C78374', gui = 'italic,bold' },
                 padding = 1,
+                fmt = file_path,
             }
         },
-        lualine_x = {
-            {
-                'location',
-                draw_empty = true,
-                color = { fg = '#ffaa88', bg = '#C78374', gui = 'italic,bold' },
-                type = nil,
-                padding = 1,
-                fmt = nil,
-            }
-        },
+        lualine_x = { 'searchcount' },
         lualine_y = {
             {
-                'progress',
-                draw_empty = true,
-                color = { fg = '#ffaa88', bg = '#C78374', gui = 'italic,bold' },
-                type = nil,
-                padding = 1,
-                fmt = nil,
+                'custom',
+                icon = '',
+                component_separators = '|',
+                separator = '|',
+                fmt = total_lines,
             }
         },
         lualine_z = {
             {
                 window,
                 draw_empty = true,
-                color = { fg = '#DDDDDD', bg = '#C95400', gui = 'italic,bold' },
                 type = nil,
                 padding = 1,
                 fmt = nil,
             }
         },
     },
-    tabline = {},
+    tabline = {
+    },
     winbar = {},
     inactive_winbar = {},
     extensions = {}
@@ -340,7 +358,7 @@ require('lualine').setup {
 ----------------- Harpoon ------------------
 require("harpoon").setup({
     menu = {
-        width = vim.api.nvim_win_get_width(0) - 10,
+        width = vim.api.nvim_win_get_width(0) - 20,
     }
 })
 
@@ -367,12 +385,79 @@ end
 
 vim.o.tabline = "%!v:lua.MyTabline()"
 vim.o.showtabline = 2 -- Always show the tabline
-vim.cmd [[
-  highlight TabLine guifg=#ffffff guibg=#44475a
-  highlight TabLineSel guifg=#ffffff guibg=#6272a4
-  highlight TabLineFill guibg=#282a36
-]]
+
+-------------------- MINIMAP ------------------------
+vim.g.neominimap = {
+    x_multiplier = 1, ---@type integer
+    y_multiplier = 1, ---@type integer
+    --- Used when `layout` is set to `split`
+    split = {
+        minimap_width = 10, ---@type integer
+
+        -- Always fix the width of the split window
+        fix_width = false, ---@type boolean
+
+        -- split mode:
+        -- left is an alias for topleft   - leftmost vertical split, full height
+        -- right is an alias for botright - rightmost vertical split, full height
+        -- aboveleft -  left split in current window
+        -- rightbelow - right split in current window
+        ---@alias Neominimap.Config.SplitDirection "left" | "right" |
+        ---       "topleft" | "botright" | "aboveleft" | "rightbelow"
+        direction = "right", ---@type Neominimap.Config.SplitDirection
+
+        ---Automatically close the split window when it is the last window
+        close_if_last_window = false, ---@type boolean
+    },
+
+    --- Used when `layout` is set to `float`
+    float = {
+        minimap_width = 10, ---@type integer
+        max_minimap_height = nil,
+
+        margin = {
+            right = 0,
+            top = 0,
+            bottom = 0,
+        },
+        z_index = 1,
+
+        window_border = "single",
+    },
+
+    git = {
+        enabled = false,
+        mode = "sign",
+        priority = 6,
+        icon = {
+            add = "+ ",
+            change = "~ ",
+            delete = "- ",
+        },
+    },
+
+    search = {
+        enabled = true,
+        mode = "line",
+        priority = 20,
+        icon = "󰱽 ",
+    },
+
+    treesitter = {
+        enabled = true,
+        priority = 200,
+    },
+
+    mark = {
+        enabled = true,
+        mode = "icon",
+        priority = 10,
+        key = "m",
+        show_builtins = false,
+    },
+}
 
 -------------------- IMPORTS ------------------------
+
 require("mappings")
 require("options")
