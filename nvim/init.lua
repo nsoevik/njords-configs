@@ -1,7 +1,3 @@
--- Recommended to disable by nvim-tree
--- vim.g.loaded_netrw = 1
--- vim.g.loaded_netrwPlugin = 1
-
 -- git clone --depth=1 https://github.com/savq/paq-nvim.git ~/.local/share/nvim/site/pack/paqs/start/paq-nvim
 require "paq" {
     "savq/paq-nvim",
@@ -27,7 +23,6 @@ require "paq" {
         requires = { 'nvim-tree/nvim-web-devicons', opt = true }
     },
 
-    -- "nvim-tree/nvim-tree.lua",
     "echasnovski/mini.files",
     'nvim-tree/nvim-web-devicons',
     'm4xshen/autoclose.nvim',
@@ -42,26 +37,73 @@ require "paq" {
     "Mofiqul/vscode.nvim",
     "nvim-lua/plenary.nvim",
 
-    -- "Isrothy/neominimap.nvim",
-    -- "lewis6991/gitsigns.nvim",
-
     {
         "ibhagwan/fzf-lua",
         requires = { "nvim-tree/nvim-web-devicons" },
     },
+
+    'alexghergh/nvim-tmux-navigation',
+
+    "stevearc/resession.nvim",
+
     "ThePrimeagen/harpoon"
 }
 
 vim.cmd("colorscheme vscode")
 require("autoclose").setup()
-require("mini.files").setup()
+require("mini.files").setup({
+    options = {
+        permanent_delete = true,
+        use_as_default_explorer = false,
+    },
+})
 require("render-markdown").enable()
+require 'nvim-tmux-navigation'.setup {
+    disable_when_zoomed = true
+}
+
+-------------------- Resession ------------------
+local resession = require("resession")
+resession.setup({
+    autosave = {
+        enabled = true,
+        interval = 60,
+        notify = true,
+    },
+})
+
+vim.api.nvim_create_autocmd("VimLeavePre", {
+    callback = function()
+        -- Always save a special session named "last"
+        resession.save(vim.fn.getcwd(), { dir = "dirsession", silence_errors = true })
+    end,
+})
+
+vim.api.nvim_create_autocmd("VimEnter", {
+    callback = function()
+        resession.load(vim.fn.getcwd(), { dir = "dirsession", silence_errors = true })
+    end,
+    nested = true,
+})
+
+vim.api.nvim_create_autocmd("VimLeavePre", {
+    callback = function()
+        resession.save(vim.fn.getcwd(), { dir = "dirsession", notify = false })
+    end,
+})
+
+vim.api.nvim_create_autocmd('StdinReadPre', {
+    callback = function()
+        -- Store this for later
+        vim.g.using_stdin = true
+    end,
+})
 
 -------------------- LSP ------------------------
 local lspconfig = require("lspconfig")
 require("mason").setup()
 require("mason-lspconfig").setup {
-    ensure_installed = { "lua_ls", "rust_analyzer", "ts_ls", "ast_grep", "buf_ls", "jedi_language_server", "yamlls", },
+    ensure_installed = { "lua_ls", "rust_analyzer", "buf_ls" },
     handlers = {
         function(server_name)
             if server_name ~= "gopls" and server_name ~= "omnisharp" then
@@ -116,9 +158,6 @@ lspconfig.omnisharp.setup({
     enable_roslyn_analyzers = true,
 })
 
-vim.notify = function(msg, _)
-end
-
 lspconfig.gopls.setup({
     root_dir = lspconfig.util.root_pattern("go.work", "go.mod", "WORKSPACE"),
     cmd = { "gopls" },
@@ -152,26 +191,12 @@ lspconfig.gopls.setup({
 -------------------- PARSING ------------------------
 
 require 'nvim-treesitter.configs'.setup {
-    -- A list of parser names, or "all" (the five listed parsers should always be installed)
     ensure_installed = { "c_sharp", "rust", "lua", "vim", "vimdoc", "python", "go", "javascript", "css", "html", "markdown", "markdown_inline", "json" },
-
-    -- Install parsers synchronously (only applied to `ensure_installed`)
     sync_install = false,
-
-    -- Automatically install missing parsers when entering buffer
-    -- Recommendation: set to false if you don't have `tree-sitter` CLI installed locally
     auto_install = true,
-
-    ---- If you need to change the installation directory of the parsers (see -> Advanced Setup)
-    -- parser_install_dir = "/some/path/to/store/parsers", -- Remember to run vim.opt.runtimepath:append("/some/path/to/store/parsers")!
     highlight = {
         enable = true,
 
-        -- NOTE: these are the names of the parsers and not the filetype. (for example if you want to
-        -- disable highlighting for the `tex` filetype, you need to include `latex` in this list as this is
-        -- the name of the parser)
-        -- list of language that will be disabled
-        -- Or use a function for more flexibility, e.g. to disable slow treesitter highlight for large files
         disable = function(lang, buf)
             local max_filesize = 100 * 1024 -- 100 KB
             local ok, stats = pcall(vim.loop.fs_stat, vim.api.nvim_buf_get_name(buf))
@@ -180,10 +205,6 @@ require 'nvim-treesitter.configs'.setup {
             end
         end,
 
-        -- Setting this to true will run `:h syntax` and tree-sitter at the same time.
-        -- Set this to `true` if you depend on 'syntax' being enabled (like for indentation).
-        -- Using this option may slow down your editor, and you may see some duplicate highlights.
-        -- Instead of true it can also be a list of languages
         additional_vim_regex_highlighting = false,
     },
 }
@@ -204,33 +225,6 @@ cmp.setup({
         { name = "path" },     -- File paths
     }),
 })
-
--------------------- NVIM TREE ------------------------
--- require("nvim-tree").setup({
---     prefer_startup_root = true,
---     sort = {
---         sorter = "case_sensitive",
---     },
---     renderer = {
---         group_empty = true,
---     },
---     filters = {
---         dotfiles = false,
---     },
---     view = {
---         relativenumber = true,
---         number = true,
---         width = 50,
---     },
---     update_focused_file = {
---         enable = true,
---     },
---     actions = {
---         open_file = {
---             quit_on_open = false, -- Prevents NvimTree from closing when opening a file
---         },
---     }
--- })
 
 local window = function()
     return vim.api.nvim_win_get_number(0)
@@ -378,8 +372,20 @@ require('lualine').setup {
 ----------------- Harpoon ------------------
 require("harpoon").setup({
     menu = {
-        width = vim.api.nvim_win_get_width(0) - 20,
+        width = vim.api.nvim_win_get_width(0) - 10,
     }
+})
+
+vim.api.nvim_create_autocmd('VimResized', {
+    pattern = '*',
+    callback = function()
+        require('harpoon').setup({
+            menu = {
+                width = vim.api.nvim_win_get_width(0) - 10,
+            }
+        })
+        vim.api.nvim_command('wincmd =')
+    end,
 })
 
 ------------------- TABS -------------------
@@ -404,78 +410,7 @@ function _G.MyTabline()
 end
 
 vim.o.tabline = "%!v:lua.MyTabline()"
-vim.o.showtabline = 2 -- Always show the tabline
-
--------------------- MINIMAP ------------------------
-vim.g.neominimap = {
-    x_multiplier = 1, ---@type integer
-    y_multiplier = 1, ---@type integer
-    --- Used when `layout` is set to `split`
-    split = {
-        minimap_width = 10, ---@type integer
-
-        -- Always fix the width of the split window
-        fix_width = false, ---@type boolean
-
-        -- split mode:
-        -- left is an alias for topleft   - leftmost vertical split, full height
-        -- right is an alias for botright - rightmost vertical split, full height
-        -- aboveleft -  left split in current window
-        -- rightbelow - right split in current window
-        ---@alias Neominimap.Config.SplitDirection "left" | "right" |
-        ---       "topleft" | "botright" | "aboveleft" | "rightbelow"
-        direction = "right", ---@type Neominimap.Config.SplitDirection
-
-        ---Automatically close the split window when it is the last window
-        close_if_last_window = false, ---@type boolean
-    },
-
-    --- Used when `layout` is set to `float`
-    float = {
-        minimap_width = 10, ---@type integer
-        max_minimap_height = nil,
-
-        margin = {
-            right = 0,
-            top = 0,
-            bottom = 0,
-        },
-        z_index = 1,
-
-        window_border = "single",
-    },
-
-    git = {
-        enabled = false,
-        mode = "sign",
-        priority = 6,
-        icon = {
-            add = "+ ",
-            change = "~ ",
-            delete = "- ",
-        },
-    },
-
-    search = {
-        enabled = true,
-        mode = "line",
-        priority = 20,
-        icon = "󰱽 ",
-    },
-
-    treesitter = {
-        enabled = true,
-        priority = 200,
-    },
-
-    mark = {
-        enabled = true,
-        mode = "icon",
-        priority = 10,
-        key = "m",
-        show_builtins = false,
-    },
-}
+vim.o.showtabline = 2  -- Always show the tabline
 
 -------------------- IMPORTS ------------------------
 

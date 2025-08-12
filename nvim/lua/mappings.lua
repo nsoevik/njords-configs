@@ -21,12 +21,12 @@ vim.api.nvim_create_user_command('R', function()
 end, {})
 
 vim.keymap.set('n', '<leader>e', '<cmd>lua vim.diagnostic.open_float()<CR>', { noremap = true, silent = true })
-local MiniFiles = require("mini.files")
+local miniFiles = require("mini.files")
 vim.keymap.set("n", "<leader>t", function()
     local buf_name = vim.api.nvim_buf_get_name(0)
     local path = vim.fn.filereadable(buf_name) == 1 and buf_name or vim.fn.getcwd()
-    MiniFiles.open(path)
-    MiniFiles.reveal_cwd()
+    miniFiles.open(path)
+    miniFiles.reveal_cwd()
 end, { desc = "Open Mini Files" })
 
 vim.keymap.set("n", "gi", vim.lsp.buf.implementation, { noremap = true, silent = true })
@@ -35,8 +35,8 @@ vim.keymap.set('n', '<leader>fo', ':lua vim.lsp.buf.format()<CR>', { noremap = t
 
 vim.keymap.set("n", "<Leader>q", ":tabclose<CR>", { silent = true }) -- Close current tab
 vim.keymap.set("n", "<Leader>a", ":tabonly<CR>", { silent = true })
-vim.keymap.set("n", "<C-p>", ":tabprevious<CR>", { silent = true })  -- Previous tab
-vim.keymap.set("n", "<C-n>", ":tabnext<CR>", { silent = true })
+vim.keymap.set("n", "S-Tab", ":tabprevious<CR>", { silent = true })  -- Previous tab
+vim.keymap.set("n", "Tab", ":tabnext<CR>", { silent = true })
 vim.keymap.set("n", "<Leader>z", ":tab split<CR>", { noremap = true, silent = true })
 
 vim.keymap.set("n", "gd", vim.lsp.buf.definition, { noremap = true, silent = true })
@@ -97,8 +97,8 @@ vim.keymap.set('n', '<leader>fo', ':lua vim.lsp.buf.format()<CR>', { noremap = t
 
 vim.keymap.set("n", "<Leader>q", ":tabclose<CR>", { silent = true }) -- Close current tab
 vim.keymap.set("n", "<Leader>a", ":tabonly<CR>", { silent = true })
-vim.keymap.set("n", "<C-p>", ":tabprevious<CR>", { silent = true })  -- Previous tab
-vim.keymap.set("n", "<C-n>", ":tabnext<CR>", { silent = true })
+vim.keymap.set("n", "<Tab>", "gt", { silent = true })
+vim.keymap.set("n", "<S-Tab>", "gT", { silent = true })
 vim.keymap.set("n", "<Leader>z", ":tab split<CR>", { noremap = true, silent = true })
 
 vim.keymap.set("n", "gd", vim.lsp.buf.definition, { noremap = true, silent = true })
@@ -124,3 +124,10 @@ end
 
 vim.api.nvim_set_keymap('n', 'n', 'nzz', { noremap = true })
 vim.api.nvim_set_keymap('n', 'N', 'Nzz', { noremap = true })
+
+vim.keymap.set("n", "<C-h>", "<Cmd>NvimTmuxNavigateLeft<CR>", { silent = true })
+vim.keymap.set("n", "<C-j>", "<Cmd>NvimTmuxNavigateDown<CR>", { silent = true })
+vim.keymap.set("n", "<C-k>", "<Cmd>NvimTmuxNavigateUp<CR>", { silent = true })
+vim.keymap.set("n", "<C-l>", "<Cmd>NvimTmuxNavigateRight<CR>", { silent = true })
+vim.keymap.set("n", "<C-\\>", "<Cmd>NvimTmuxNavigateLastActive<CR>", { silent = true })
+
