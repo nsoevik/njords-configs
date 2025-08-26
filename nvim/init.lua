@@ -58,10 +58,18 @@ require("mini.files").setup({
     },
 })
 require("render-markdown").enable()
-require 'nvim-tmux-navigation'.setup {
+require("nvim-tmux-navigation").setup {
     disable_when_zoomed = true
 }
 
+require("fzf-lua").setup({
+    winopts = { 
+        width = .95,
+        preview = {
+            layout = "vertical",
+        }
+    },
+})
 -------------------- Resession ------------------
 local resession = require("resession")
 resession.setup({
@@ -268,6 +276,13 @@ require('lualine').setup {
                 type = nil,
                 padding = 1,
                 fmt = nil,
+                color = function()
+                    if vim.bo.modified then
+                        return { bg = '#D66938' } -- red for unsaved
+                    else
+                        return { bg = '#6CD968' } -- green for saved
+                    end
+                end,
             }
         },
         lualine_b = {
@@ -372,19 +387,26 @@ require('lualine').setup {
 ----------------- Harpoon ------------------
 require("harpoon").setup({
     menu = {
-        width = vim.api.nvim_win_get_width(0) - 10,
+        width = 200, -- Or any fixed value; you can make it wider
     }
 })
 
-vim.api.nvim_create_autocmd('VimResized', {
+-- Autocmd for dynamic resizing: Update width and redraw menu on resize events
+vim.api.nvim_create_autocmd({ 'VimResized', 'WinResized' }, {
     pattern = '*',
     callback = function()
-        require('harpoon').setup({
-            menu = {
-                width = vim.api.nvim_win_get_width(0) - 10,
-            }
-        })
-        vim.api.nvim_command('wincmd =')
+        -- local harpoon = require('harpoon')
+        -- harpoon.setup({
+        --     menu = {
+        --         width = vim.o.columns - 10,  -- Use total columns for consistency
+        --     }
+        -- })
+        -- -- Force Harpoon UI refresh if open (optional, if menu is visible)
+        -- if harpoon.ui.nav_is_open() then
+        --     harpoon.ui:close_menu()
+        --     harpoon.ui:toggle_quick_menu()
+        -- end
+        vim.cmd('wincmd =') -- Equalize windows
     end,
 })
 
@@ -410,7 +432,7 @@ function _G.MyTabline()
 end
 
 vim.o.tabline = "%!v:lua.MyTabline()"
-vim.o.showtabline = 2  -- Always show the tabline
+vim.o.showtabline = 2 -- Always show the tabline
 
 -------------------- IMPORTS ------------------------
 

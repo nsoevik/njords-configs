@@ -4,10 +4,10 @@ vim.api.nvim_set_keymap("n", "<Leader>ff", "<cmd>FzfLua files<CR>", { noremap = 
 vim.api.nvim_set_keymap("n", "<Leader>fg", "<cmd>FzfLua live_grep<CR>", { noremap = true, silent = true })
 vim.api.nvim_set_keymap("n", "<Leader>fr", "<cmd>FzfLua resume<CR>", { noremap = true, silent = true })
 
-vim.keymap.set('n', '<leader>h', '<C-w><Left>', {})
-vim.keymap.set('n', '<leader>l', '<C-w><Right>', {})
-vim.keymap.set('n', '<leader>j', '<C-w><Down>', {})
-vim.keymap.set('n', '<leader>k', '<C-w><Up>', {})
+-- vim.keymap.set('n', '<leader>h', '<C-w><Left>', {})
+-- vim.keymap.set('n', '<leader>l', '<C-w><Right>', {})
+-- vim.keymap.set('n', '<leader>j', '<C-w><Down>', {})
+-- vim.keymap.set('n', '<leader>k', '<C-w><Up>', {})
 vim.keymap.set('n', '<leader>|', ':vsplit<cr>', {})
 vim.keymap.set('n', '<leader>_', ':split<cr>', {})
 
@@ -35,8 +35,8 @@ vim.keymap.set('n', '<leader>fo', ':lua vim.lsp.buf.format()<CR>', { noremap = t
 
 vim.keymap.set("n", "<Leader>q", ":tabclose<CR>", { silent = true }) -- Close current tab
 vim.keymap.set("n", "<Leader>a", ":tabonly<CR>", { silent = true })
-vim.keymap.set("n", "S-Tab", ":tabprevious<CR>", { silent = true })  -- Previous tab
-vim.keymap.set("n", "Tab", ":tabnext<CR>", { silent = true })
+-- vim.keymap.set("n", "S-Tab", ":tabprevious<CR>", { silent = true })  -- Previous tab
+-- vim.keymap.set("n", "Tab", ":tabnext<CR>", { silent = true })
 vim.keymap.set("n", "<Leader>z", ":tab split<CR>", { noremap = true, silent = true })
 
 vim.keymap.set("n", "gd", vim.lsp.buf.definition, { noremap = true, silent = true })
@@ -66,10 +66,10 @@ vim.api.nvim_set_keymap("n", "<Leader>ff", "<cmd>FzfLua files<CR>", { noremap = 
 vim.api.nvim_set_keymap("n", "<Leader>fg", "<cmd>FzfLua live_grep<CR>", { noremap = true, silent = true })
 vim.api.nvim_set_keymap("n", "<Leader>fr", "<cmd>FzfLua resume<CR>", { noremap = true, silent = true })
 
-vim.keymap.set('n', '<leader>h', '<C-w><Left>', {})
-vim.keymap.set('n', '<leader>l', '<C-w><Right>', {})
-vim.keymap.set('n', '<leader>j', '<C-w><Down>', {})
-vim.keymap.set('n', '<leader>k', '<C-w><Up>', {})
+-- vim.keymap.set('n', '<leader>h', '<C-w><Left>', {})
+-- vim.keymap.set('n', '<leader>l', '<C-w><Right>', {})
+-- vim.keymap.set('n', '<leader>j', '<C-w><Down>', {})
+-- vim.keymap.set('n', '<leader>k', '<C-w><Up>', {})
 vim.keymap.set('n', '<leader>|', ':vsplit<cr>', {})
 vim.keymap.set('n', '<leader>_', ':split<cr>', {})
 
@@ -97,8 +97,8 @@ vim.keymap.set('n', '<leader>fo', ':lua vim.lsp.buf.format()<CR>', { noremap = t
 
 vim.keymap.set("n", "<Leader>q", ":tabclose<CR>", { silent = true }) -- Close current tab
 vim.keymap.set("n", "<Leader>a", ":tabonly<CR>", { silent = true })
-vim.keymap.set("n", "<Tab>", "gt", { silent = true })
-vim.keymap.set("n", "<S-Tab>", "gT", { silent = true })
+-- vim.keymap.set("n", "<Tab>", "gt", { silent = true })
+-- vim.keymap.set("n", "<S-Tab>", "gT", { silent = true })
 vim.keymap.set("n", "<Leader>z", ":tab split<CR>", { noremap = true, silent = true })
 
 vim.keymap.set("n", "gd", vim.lsp.buf.definition, { noremap = true, silent = true })
@@ -131,3 +131,5 @@ vim.keymap.set("n", "<C-k>", "<Cmd>NvimTmuxNavigateUp<CR>", { silent = true })
 vim.keymap.set("n", "<C-l>", "<Cmd>NvimTmuxNavigateRight<CR>", { silent = true })
 vim.keymap.set("n", "<C-\\>", "<Cmd>NvimTmuxNavigateLastActive<CR>", { silent = true })
 
+vim.keymap.set('n', '<S-X>', ':wqall<CR>', { noremap = true, silent = true })
+vim.keymap.set('n', '<S-Q>', ':wq<CR>', { noremap = true, silent = true })
