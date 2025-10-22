@@ -29,7 +29,12 @@ require "paq" {
     "pocco81/auto-save.nvim",
     "MeanderingProgrammer/render-markdown.nvim",
 
-    "folke/tokyonight.nvim",
+    -- Colorschemes
+    'xiantang/darcula-dark.nvim',
+    "cpea2506/one_monokai.nvim",
+    'sainnhe/sonokai',
+    "ribru17/bamboo.nvim",
+    'aliqyan-21/darkvoid.nvim',
 
     "f-person/git-blame.nvim",
     "bluz71/vim-moonfly-colors",
@@ -49,7 +54,22 @@ require "paq" {
     "ThePrimeagen/harpoon"
 }
 
-vim.cmd("colorscheme vscode")
+
+-- require('darkvoid').setup({
+--     transparent = false,
+-- })
+-- vim.cmd.colorscheme "sonokai"
+vim.cmd.colorscheme "darcula-dark"
+-- require("bamboo").load()
+-- require("one_monokai").setup({
+--     transparent = true,
+--     colors = {},
+--     highlights = function(colors)
+--         return {}
+--     end,
+--     italics = true,
+-- })
+
 require("autoclose").setup()
 require("mini.files").setup({
     options = {
@@ -63,7 +83,7 @@ require("nvim-tmux-navigation").setup {
 }
 
 require("fzf-lua").setup({
-    winopts = { 
+    winopts = {
         width = .95,
         preview = {
             layout = "vertical",
@@ -80,16 +100,31 @@ resession.setup({
     },
 })
 
-vim.api.nvim_create_autocmd("VimLeavePre", {
-    callback = function()
-        -- Always save a special session named "last"
-        resession.save(vim.fn.getcwd(), { dir = "dirsession", silence_errors = true })
-    end,
-})
-
 vim.api.nvim_create_autocmd("VimEnter", {
     callback = function()
-        resession.load(vim.fn.getcwd(), { dir = "dirsession", silence_errors = true })
+        vim.g.using_stdin = vim.g.using_stdin or false
+        if vim.g.using_stdin then
+            return
+        end
+        local argc = vim.fn.argc()
+        local should_load = argc == 0
+        local session_name = vim.fn.getcwd()
+        if argc == 1 then
+            local arg = vim.fn.argv()[1]
+            if vim.fn.isdirectory(arg) == 1 then
+                should_load = true
+                if arg == "." then
+                    session_name = vim.fn.getcwd()
+                else
+                    session_name = arg
+                end
+            end
+        end
+        if not should_load then
+            return
+        end
+        vim.notify("Opening session: " .. session_name)
+        resession.load(session_name, { dir = "dirsession", silence_errors = true })
     end,
     nested = true,
 })
@@ -102,12 +137,13 @@ vim.api.nvim_create_autocmd("VimLeavePre", {
 
 vim.api.nvim_create_autocmd('StdinReadPre', {
     callback = function()
-        -- Store this for later
         vim.g.using_stdin = true
     end,
 })
 
 -------------------- LSP ------------------------
+vim.lsp.set_log_level("WARN")
+
 local lspconfig = require("lspconfig")
 require("mason").setup()
 require("mason-lspconfig").setup {
@@ -118,53 +154,17 @@ require("mason-lspconfig").setup {
                 lspconfig[server_name].setup({})
             end
         end,
-
-        -- Not seeing this have any effect
-        omnisharp = function()
-            lspconfig.omnisharp.setup {
-                cmd = { "~/omnisharp" },
-                enable_roslyn_analyzers = true,
-            }
-        end,
-
-        gopls = function()
-            lspconfig.gopls.setup({
-                root_dir = lspconfig.util.root_pattern("go.work", "go.mod", "WORKSPACE"),
-                cmd = { "gopls" },
-                filetypes = { "go", "gomod" },
-                settings = {
-                    gopls = {
-                        env = {
-                            GOPACKAGESDRIVER = "/home/nsoevik/repos/satcode/payload/tools/gopackagesdriver.sh",
-                            GOPACKAGESDRIVER_BAZEL_BUILD_FLAGS =
-                            "--strategy=GoStdlibList=local --linkopt=-Wl,--strip-all --config=armv7l",
-                            BAZEL_NOTIFY_THRESH = "999999999",
-                        },
-                        directoryFilters = {
-                            "-bazel-bin",
-                            "-bazel-out",
-                            "-bazel-testlogs",
-                            "-bazel-payload",
-                        },
-                        analyses = {
-                            unusedparams = false,
-                            simplifycompositelit = false,
-                            simplifyrange = false,
-                            infertypeargs = false,
-                        },
-                        staticcheck = true,
-                        gofumpt = true,
-                    },
-                },
-            })
-        end,
     }
 }
 
-lspconfig.omnisharp.setup({
-    cmd = { "OmniSharp" },
-    enable_roslyn_analyzers = true,
-})
+-- Using manually installed LSPs -> Move setup outside of mason-lspconfig setup
+lspconfig.omnisharp.setup {
+    cmd = { vim.fn.expand("~/omnisharp/OmniSharp") },
+    enable_roslyn_analyzers = true, enable_import_completion = true,
+    organize_imports_on_format = true,
+    filetypes = { "cs", "csx", "cake" },
+    root_dir = lspconfig.util.root_pattern("*.sln", "*.csproj", "omnisharp.json", ".git"),
+}
 
 lspconfig.gopls.setup({
     root_dir = lspconfig.util.root_pattern("go.work", "go.mod", "WORKSPACE"),
@@ -179,6 +179,7 @@ lspconfig.gopls.setup({
                 BAZEL_NOTIFY_THRESH = "999999999",
             },
             directoryFilters = {
+                "-bazel-",
                 "-bazel-bin",
                 "-bazel-out",
                 "-bazel-testlogs",
@@ -238,15 +239,7 @@ local window = function()
     return vim.api.nvim_win_get_number(0)
 end
 
--------------------- STATUS BAR ------------------------
-local function total_lines()
-    local count = vim.api.nvim_buf_line_count(0)
-    return vim.fn.line('.') .. '/' .. count
-end
-
-local function file_path()
-    return vim.fn.expand('%:~:.:h')
-end
+-------------------- LUALINE ------------------------
 
 require('lualine').setup {
     options = {
@@ -276,13 +269,7 @@ require('lualine').setup {
                 type = nil,
                 padding = 1,
                 fmt = nil,
-                color = function()
-                    if vim.bo.modified then
-                        return { bg = '#D66938' } -- red for unsaved
-                    else
-                        return { bg = '#6CD968' } -- green for saved
-                    end
-                end,
+                color = nil,
             }
         },
         lualine_b = {
