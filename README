@@ -8,3 +8,6 @@ wget -P ~/.local/share/fonts https://github.com/ryanoasis/nerd-fonts/releases/do
 # Common problems
 Cryptic treesitter problems can be solved by:
 :TSInstall all and :TSUpdate
+
+# Tmux plugins
+git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm

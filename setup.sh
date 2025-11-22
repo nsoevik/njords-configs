@@ -14,4 +14,5 @@ echo "nvim config -> $HOME/.config/nvim"
 echo ".tmux.conf -> $HOME/.tmux.conf"
 
 git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
-echo "cloned TPM, restart tmux and command <Leader> + I"
+echo "cloned TPM, restart tmux and install plugins: <Leader> + I"
+

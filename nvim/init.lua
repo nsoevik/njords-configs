@@ -58,9 +58,9 @@ require "paq" {
 -- require('darkvoid').setup({
 --     transparent = false,
 -- })
--- vim.cmd.colorscheme "sonokai"
-vim.cmd.colorscheme "darcula-dark"
--- require("bamboo").load()
+----------------vim.cmd.colorscheme "sonokai"
+-- vim.cmd.colorscheme "darcula-dark"
+require("bamboo").load()
 -- require("one_monokai").setup({
 --     transparent = true,
 --     colors = {},
