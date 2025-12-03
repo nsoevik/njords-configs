@@ -1,9 +1,7 @@
 #!/bin/sh
 
 TMUX_PLUGINS_DIR="$HOME/.tmux/plugins/tpm"
-
-SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
-REPO_DIR="$SCRIPT_DIR"
+REPO_DIR="$(cd "$(dirname "$0")" && pwd)"
 
 ln -sf $REPO_DIR/.tmux.conf $HOME/.tmux.conf
 
