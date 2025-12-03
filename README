@@ -1,13 +1,41 @@
-# Must install a nerdfont like below then change terminal settings:
-wget -P ~/.local/share/fonts https://github.com/ryanoasis/nerd-fonts/releases/download/v3.2.1/Lilex.zip \
-&& cd ~/.local/share/fonts \
-&& unzip Lilex.zip \
-&& rm Lilex.zip \
-&& fc-cache -fv
+This repo sets configuration files for NEOVIM and TMUX.
+*Does not install NEOVIM or TMUX.
+
+############ INSTALLATION ############
+1. Install tmux, neovim. Tmux is usually pre-installed.
+2. Install xclip (ie 'sudo dnf install xclip' on RHEL).
+3. Run `./setup.sh'
+
+############# TMUX Issues #############
+Keybinds are found in .tmux.conf.
+
+The most annoying thing about tmux conf is the issues with yanking.
+While in a tmux session:
+1. Open select: Ctrl + q
+2. Select line: Shift + v
+3. Yank: y
+4. Paste contents of your clipboard. 
+
+If this did not work, try the below steps.
+Verify xclip is working
+> echo "test clipboard" | xclip -selection clipboard -in
+If not, 
+> echo $DISPLAY
+You should see a display number, ex. ':0', ':1'
+If not, set your display and reattach to tmux
+1. > export DISPLAY=:0
+2. Detach from session: <leader> d
+3. Reattach to session (ex. > tmux attach -t 0)
+
+############# NEOVIM ############
+Must install a nerdfont like below then change terminal settings:
+    wget -P ~/.local/share/fonts https://github.com/ryanoasis/nerd-fonts/releases/download/v3.2.1/Lilex.zip \
+    && cd ~/.local/share/fonts \
+    && unzip Lilex.zip \
+    && rm Lilex.zip \
+    && fc-cache -fv
 
 # Common problems
 Cryptic treesitter problems can be solved by:
 :TSInstall all and :TSUpdate
 
-# Tmux plugins
-git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
