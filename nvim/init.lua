@@ -34,7 +34,6 @@ require "paq" {
     "cpea2506/one_monokai.nvim",
     'sainnhe/sonokai',
     "ribru17/bamboo.nvim",
-    'aliqyan-21/darkvoid.nvim',
 
     "f-person/git-blame.nvim",
     "bluz71/vim-moonfly-colors",
@@ -55,12 +54,14 @@ require "paq" {
 }
 
 
--- require('darkvoid').setup({
---     transparent = false,
--- })
+-- Colorschemes
+-- This is a bit ugly, I just uncomment a colorscheme when I want to change it.
 ----------------vim.cmd.colorscheme "sonokai"
+-- # 1
 -- vim.cmd.colorscheme "darcula-dark"
+-- # 2
 require("bamboo").load()
+-- # 3
 -- require("one_monokai").setup({
 --     transparent = true,
 --     colors = {},
@@ -70,18 +71,23 @@ require("bamboo").load()
 --     italics = true,
 -- })
 
+-- Smaller quality of life plugins
+-- Automatically close quotes, parentheses, etc.
 require("autoclose").setup()
+-- Simple file explorer.
 require("mini.files").setup({
     options = {
         permanent_delete = true,
         use_as_default_explorer = false,
     },
 })
+-- Markdown.
 require("render-markdown").enable()
+-- TMUX + NVIM navigation. This configuration also exists in .tmux.conf.
 require("nvim-tmux-navigation").setup {
     disable_when_zoomed = true
 }
-
+-- Fuzzy finder.
 require("fzf-lua").setup({
     winopts = {
         width = .95,
@@ -91,6 +97,7 @@ require("fzf-lua").setup({
     },
 })
 -------------------- Resession ------------------
+-- Recreates neovim sessions per-directory.
 local resession = require("resession")
 resession.setup({
     autosave = {
@@ -142,6 +149,7 @@ vim.api.nvim_create_autocmd('StdinReadPre', {
 })
 
 -------------------- LSP ------------------------
+-- Language servers for autocompletion
 vim.lsp.set_log_level("WARN")
 
 local lspconfig = require("lspconfig")
@@ -173,6 +181,7 @@ lspconfig.gopls.setup({
     settings = {
         gopls = {
             env = {
+                -- NJORD SPECIFIC PATH
                 GOPACKAGESDRIVER = "/home/nsoevik/repos/satcode/payload/tools/gopackagesdriver.sh",
                 GOPACKAGESDRIVER_BAZEL_BUILD_FLAGS =
                 "--strategy=GoStdlibList=local --linkopt=-Wl,--strip-all --config=armv7l",
@@ -198,7 +207,7 @@ lspconfig.gopls.setup({
 })
 
 -------------------- PARSING ------------------------
-
+-- More autocompletion and coloring on types.
 require 'nvim-treesitter.configs'.setup {
     ensure_installed = { "c_sharp", "rust", "lua", "vim", "vimdoc", "python", "go", "javascript", "css", "html", "markdown", "markdown_inline", "json" },
     sync_install = false,
@@ -219,6 +228,7 @@ require 'nvim-treesitter.configs'.setup {
 }
 
 -------------------- CMP ------------------------
+--- More autocompletion.
 local cmp = require("cmp")
 
 cmp.setup({
@@ -240,7 +250,7 @@ local window = function()
 end
 
 -------------------- LUALINE ------------------------
-
+--- Nicer graphical line to show current file, colors in the banner.
 require('lualine').setup {
     options = {
         icons_enabled = true,
@@ -374,7 +384,7 @@ require('lualine').setup {
 ----------------- Harpoon ------------------
 require("harpoon").setup({
     menu = {
-        width = 200, -- Or any fixed value; you can make it wider
+        width = 200,
     }
 })
 
