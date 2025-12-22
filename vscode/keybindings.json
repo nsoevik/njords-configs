@@ -1,0 +1,100 @@
+// Place your key bindings in this file to override the defaults
+[
+    {
+        "key": "cmd+i",
+        "command": "composerMode.agent"
+    },
+    {
+        "key": "space _",
+        "command": "workbench.action.splitEditorDown",
+        "when": "vim.mode == 'Normal' && editorTextFocus && !terminalFocus"
+    },
+    {
+        "key": "space |",
+        "command": "workbench.action.splitEditorRight",
+        "when": "vim.mode == 'Normal' && editorTextFocus && !terminalFocus"
+    },
+    {
+        "key": "space f f",
+        "command": "workbench.action.quickOpen",
+        "when": "vim.mode == 'Normal' && editorTextFocus && !terminalFocus"
+    },
+    {
+        "key": "space f g",
+        "command": "workbench.action.findInFiles",
+        "when": "vim.mode == 'Normal' && editorTextFocus && !terminalFocus"
+    },
+    {
+        "key": "space shift+\\",
+        "command": "workbench.action.splitEditorRight",
+        "when": "vim.mode == 'Normal' && editorTextFocus && !terminalFocus"
+    },
+    {
+        "key": "space shift+-",
+        "command": "workbench.action.splitEditorDown",
+        "when": "vim.mode == 'Normal' && editorTextFocus && !terminalFocus"
+    },
+    {
+        "key": "g d",
+        "command": "editor.action.goToTypeDefinition",
+        "when": "vim.mode == 'Normal' && editorTextFocus"
+    },
+    {
+        "key": "g a",
+        "command": "editor.action.quickFix",
+        "when": "vim.mode == 'Normal' && editorTextFocus"
+    },
+    {
+        "key": "shift+k",
+        "command": "editor.action.showHover",
+        "when": "vim.mode == 'Normal' && editorTextFocus"
+    },
+    {
+        "key": "ctrl+h",
+        "command": "workbench.action.focusLeftGroup",
+        "when": "vim.mode == 'Normal' && editorTextFocus"
+    },
+    {
+        "key": "ctrl+j",
+        "command": "workbench.action.focusBelowGroup",
+        "when": "vim.mode == 'Normal' && editorTextFocus"
+    },
+    {
+        "key": "ctrl+k",
+        "command": "workbench.action.focusAboveGroup",
+        "when": "vim.mode == 'Normal' && editorTextFocus"
+    },
+    {
+        "key": "ctrl+l",
+        "command": "workbench.action.focusRightGroup",
+        "when": "vim.mode == 'Normal' && editorTextFocus"
+    },
+    {
+        "key": "ctrl+1",
+        "command": "workbench.files.action.focusFilesExplorer",
+    },
+    {
+        "key": "ctrl+2",
+        "command": "workbench.action.focusActiveEditorGroup",
+    },
+    {
+        "key": "ctrl+4",
+        "command": "composerMode.agent",
+    },
+    {
+        "key": "ctrl+3",
+        "command": "workbench.action.terminal.focus"
+    },
+    {
+        "key": "ctrl+tab",
+        "command": "workbench.action.nextEditorInGroup"
+    },
+    {
+        "key": "ctrl+shift+tab",
+        "command": "workbench.action.previousEditorInGroup"
+    },
+    {
+        "key": "ctrl+q",
+        "command": "workbench.action.closeActiveEditor"
+    },
+]
